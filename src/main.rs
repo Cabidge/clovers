@@ -26,6 +26,7 @@ fn render_base(title: &str, body: Markup) -> Markup {
         html {
             head {
                 title { (title) }
+                script src="https://unpkg.com/htmx.org@1.9.4" { }
             }
             body {
                 (body)
