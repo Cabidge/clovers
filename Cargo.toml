@@ -10,4 +10,5 @@ anyhow = "1.0.72"
 axum = "0.6.20"
 maud = { version = "0.25.0", features = ["axum"] }
 sea-orm = { version = "0.12.2", features = ["runtime-tokio-rustls", "macros", "sqlx-sqlite"] }
+serde = { version = "1.0.183", features = ["derive"] }
 tokio = { version = "1.29.1", features = ["full"] }
