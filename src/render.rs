@@ -25,6 +25,6 @@ pub fn post_button_item() -> Markup {
 
 pub fn post_item(content: &str) -> Markup {
     html! {
-        li.post { (content) }
+        li.post { pre { (content) } }
     }
 }
