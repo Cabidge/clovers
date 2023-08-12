@@ -1,3 +1,5 @@
+mod render;
+
 use std::sync::{Arc, Mutex};
 
 use axum::{extract::State, response::Redirect, Form};
@@ -41,7 +43,7 @@ async fn main() {
 async fn root(State(state): State<AppState>) -> Markup {
     let posts = state.posts.lock().unwrap();
 
-    render_base(
+    render::layout(
         "clovers",
         html! {
             a href="/post/new" { "Make a Post" }
@@ -55,7 +57,7 @@ async fn root(State(state): State<AppState>) -> Markup {
 }
 
 async fn make_post_form() -> Markup {
-    render_base(
+    render::layout(
         "clovers | Make a Post",
         html! {
             form method="post" action="/post" {
@@ -69,19 +71,4 @@ async fn make_post_form() -> Markup {
 async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> Redirect {
     state.posts.lock().unwrap().push(post.content.clone());
     Redirect::to("/")
-}
-
-fn render_base(title: &str, body: Markup) -> Markup {
-    html! {
-        (maud::DOCTYPE)
-        html {
-            head {
-                title { (title) }
-                script src="https://unpkg.com/htmx.org@1.9.4" { }
-            }
-            body {
-                (body)
-            }
-        }
-    }
 }
