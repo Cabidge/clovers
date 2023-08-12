@@ -8,7 +8,7 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 title { (title) }
                 script src="https://unpkg.com/htmx.org@1.9.4" { }
             }
-            body {
+            body hx-boost="true" {
                 (body)
             }
         }
