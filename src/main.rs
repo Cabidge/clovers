@@ -73,6 +73,7 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
 
 fn render_base(title: &str, body: Markup) -> Markup {
     html! {
+        (maud::DOCTYPE)
         html {
             head {
                 title { (title) }
