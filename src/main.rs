@@ -2,7 +2,7 @@ mod render;
 
 use std::sync::{Arc, Mutex};
 
-use axum::{extract::State, response::Redirect, Form};
+use axum::{extract::State, Form};
 use maud::{html, Markup};
 use serde::Deserialize;
 
@@ -28,10 +28,13 @@ async fn main() {
         ])),
     };
 
+    let post_routes = axum::Router::new()
+        .route("/", post(make_post))
+        .route("/new", get(get_post_form));
+
     let app = axum::Router::new()
         .route("/", get(root))
-        .route("/post/new", get(make_post_form))
-        .route("/post", post(make_post))
+        .nest("/posts", post_routes)
         .with_state(state);
 
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -46,29 +49,30 @@ async fn root(State(state): State<AppState>) -> Markup {
     render::layout(
         "clovers",
         html! {
-            a href="/post/new" { "Make a Post" }
             ul #posts {
+                (render::post_button_item())
                 @for post in posts.iter().rev() {
-                    li.post { (post) }
+                    (render::post_item(post))
                 }
             }
         },
     )
 }
 
-async fn make_post_form() -> Markup {
-    render::layout(
-        "clovers | Make a Post",
-        html! {
-            form method="post" action="/post" {
-                textarea rows="10" cols="80" name="content" { }
-                button { "Post" }
-            }
-        },
-    )
+async fn get_post_form() -> Markup {
+    html! {
+        form hx-post="/posts" hx-target="closest li" hx-swap="outerHTML" {
+            textarea rows="10" cols="80" name="content" { }
+            button { "Post" }
+        }
+    }
 }
 
-async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> Redirect {
+async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> Markup {
     state.posts.lock().unwrap().push(post.content.clone());
-    Redirect::to("/")
+
+    html! {
+        (render::post_button_item())
+        (render::post_item(&post.content))
+    }
 }

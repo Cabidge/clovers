@@ -15,3 +15,15 @@ pub fn layout(title: &str, body: Markup) -> Markup {
         }
     }
 }
+
+pub fn post_button_item() -> Markup {
+    html! {
+        li { button hx-get="/posts/new" hx-swap="outerHTML" { "Make a Post" } }
+    }
+}
+
+pub fn post_item(content: &str) -> Markup {
+    html! {
+        li.post { (content) }
+    }
+}
