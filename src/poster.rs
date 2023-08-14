@@ -5,7 +5,7 @@ use blake2::{Blake2s256, Digest};
 
 pub struct Poster {
     pub name: String,
-    pub hash: Option<String>,
+    hash: Option<Box<[u8]>>,
 }
 
 impl Poster {
@@ -33,14 +33,20 @@ impl Poster {
             .chain_update(secret)
             .chain_update("#clovers#")
             .chain_update(&name)
-            .finalize();
-
-        let serialized_hash = base64ct::Base64::encode_string(&hash);
+            .finalize()
+            .to_vec()
+            .into_boxed_slice();
 
         Self {
             name,
-            hash: Some(serialized_hash),
+            hash: Some(hash),
         }
+    }
+
+    pub fn hash(&self) -> Option<String> {
+        self.hash
+            .as_ref()
+            .map(|hash| base64ct::Base64UrlUnpadded::encode_string(hash))
     }
 }
 

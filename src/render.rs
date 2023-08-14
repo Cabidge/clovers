@@ -30,7 +30,7 @@ pub fn post(post: &Post) -> Markup {
         article.post {
             span.poster {
                 (post.poster.name)
-                @if let Some(hash) = &post.poster.hash {
+                @if let Some(hash) = post.poster.hash() {
                     i { " #" (hash) }
                 }
             }
