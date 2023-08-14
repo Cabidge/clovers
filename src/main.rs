@@ -77,12 +77,12 @@ async fn get_post_form() -> Markup {
     html! {
         form.post-form hx-post="/posts" hx-target="closest li" hx-swap="outerHTML" {
             label {
-                span { "Content" }
-                textarea rows="10" cols="80" name="content" placeholder="What's on your mind?" { }
-            }
-            label {
                 span { "Name (optional)" }
                 input name="poster" placeholder="Anonymous" { }
+            }
+            label {
+                span { "Content" }
+                textarea rows="10" cols="80" name="content" placeholder="What's on your mind?" { }
             }
             button { "Post" }
         }
