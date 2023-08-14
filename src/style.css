@@ -1,3 +1,7 @@
+body {
+    padding: 5rem;
+}
+
 #posts {
     list-style-type: none;
     margin: 0;
