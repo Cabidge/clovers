@@ -1,5 +1,7 @@
 use maud::{html, Markup};
 
+use crate::post::Post;
+
 pub fn layout(title: &str, body: Markup) -> Markup {
     html! {
         (maud::DOCTYPE)
@@ -23,8 +25,18 @@ pub fn post_button_item() -> Markup {
     }
 }
 
-pub fn post_item(content: &str) -> Markup {
+pub fn post_item(post: &Post) -> Markup {
     html! {
-        li.post { pre { (content) } }
+        li {
+            article.post {
+                span.poster {
+                    (post.poster.name)
+                    @if let Some(hash) = &post.poster.hash {
+                        i { " # " (hash) }
+                    }
+                }
+                pre.post-content { (post.content) }
+            }
+        }
     }
 }
