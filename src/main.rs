@@ -75,15 +75,27 @@ async fn root(State(state): State<AppState>) -> Markup {
 
 async fn get_post_form() -> Markup {
     html! {
-        form hx-post="/posts" hx-target="closest li" hx-swap="outerHTML" {
-            textarea rows="10" cols="80" name="content" { }
-            input name="poster" placeholder="Name (optional)" { }
+        form.post-form hx-post="/posts" hx-target="closest li" hx-swap="outerHTML" {
+            label {
+                span { "Content" }
+                textarea rows="10" cols="80" name="content" placeholder="What's on your mind?" { }
+            }
+            label {
+                span { "Name (optional)" }
+                input name="poster" placeholder="Anonymous" { }
+            }
             button { "Post" }
         }
     }
 }
 
 async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> Markup {
+    if post.content.is_empty() {
+        return html! {
+            li { (render::post_button()) }
+        };
+    }
+
     let post = Post {
         content: post.content,
         poster: post.poster.parse().expect("Infallible"),
