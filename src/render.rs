@@ -32,7 +32,7 @@ pub fn post_item(post: &Post) -> Markup {
                 span.poster {
                     (post.poster.name)
                     @if let Some(hash) = &post.poster.hash {
-                        i { " # " (hash) }
+                        i { " #" (hash) }
                     }
                 }
                 pre.post-content { (post.content) }

@@ -13,3 +13,12 @@
     padding: 1rem;
     border: solid black 1px;
 }
+
+.poster {
+    font-weight: 600;
+}
+
+.poster i {
+    font-size: 0.9rem;
+    color: rgb(3, 139, 37);
+}
