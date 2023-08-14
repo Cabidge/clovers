@@ -82,7 +82,7 @@ async fn get_post_form() -> Markup {
             }
             label {
                 span { "Content" }
-                textarea rows="10" cols="80" name="content" placeholder="What's on your mind?" { }
+                textarea rows="10" name="content" placeholder="What's on your mind?" { }
             }
             button { "Post" }
         }

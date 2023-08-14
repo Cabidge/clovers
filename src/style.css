@@ -29,6 +29,10 @@ body {
     flex-direction: column;
 }
 
+.post-form textarea {
+    resize: none;
+}
+
 .poster {
     display: flex;
     gap: 0.5rem;
