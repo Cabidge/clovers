@@ -26,10 +26,26 @@
 }
 
 .poster {
+    display: flex;
+    gap: 0.5rem;
     font-weight: 600;
 }
 
+/* tripcode */
 .poster i {
+    align-self: flex-end;
+    display: inline-block;
+    
+    max-width: 5rem;
+    text-overflow: ellipsis;
+    overflow:hidden;
+    white-space: nowrap;
+
     font-size: 0.9rem;
+    font-family: monospace;
     color: rgb(3, 139, 37);
+}
+
+.poster:hover i {
+    max-width: none;
 }
