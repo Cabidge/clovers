@@ -64,9 +64,9 @@ async fn root(State(state): State<AppState>) -> Markup {
         "clovers",
         html! {
             ul #posts {
-                (render::post_button_item())
+                li { (render::post_button()) }
                 @for post in posts.iter().rev() {
-                    (render::post_item(post))
+                    li { (render::post(post)) }
                 }
             }
         },
@@ -89,12 +89,12 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
         poster: post.poster.parse().expect("Infallible"),
     };
 
-    let post_item = render::post_item(&post);
+    let rendered_post = render::post(&post);
 
     state.posts.lock().unwrap().push(post);
 
     html! {
-        (render::post_button_item())
-        (post_item)
+        li { (render::post_button()) }
+        li { (rendered_post) }
     }
 }

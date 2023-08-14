@@ -19,24 +19,22 @@ pub fn layout(title: &str, body: Markup) -> Markup {
     }
 }
 
-pub fn post_button_item() -> Markup {
+pub fn post_button() -> Markup {
     html! {
-        li { button hx-get="/posts/new" hx-swap="outerHTML" { "Make a Post" } }
+        button hx-get="/posts/new" hx-swap="outerHTML" { "Make a Post" }
     }
 }
 
-pub fn post_item(post: &Post) -> Markup {
+pub fn post(post: &Post) -> Markup {
     html! {
-        li {
-            article.post {
-                span.poster {
-                    (post.poster.name)
-                    @if let Some(hash) = &post.poster.hash {
-                        i { " #" (hash) }
-                    }
+        article.post {
+            span.poster {
+                (post.poster.name)
+                @if let Some(hash) = &post.poster.hash {
+                    i { " #" (hash) }
                 }
-                pre.post-content { (post.content) }
             }
+            pre.post-content { (post.content) }
         }
     }
 }
