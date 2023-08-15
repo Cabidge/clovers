@@ -62,6 +62,10 @@ body {
     font-family: sans-serif;
 }
 
+.poster {
+    align-self: flex-start;
+}
+
 .poster .tripcode {
     align-self: flex-end;
     display: inline-block;
