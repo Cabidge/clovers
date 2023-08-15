@@ -79,7 +79,7 @@ async fn get_post_form() -> Markup {
         form.post-form hx-post="/posts" hx-target="closest li" hx-swap="outerHTML" {
             label {
                 span { "Name (optional)" }
-                input name="poster" placeholder="Anonymous" { }
+                input name="poster" placeholder="Anonymous" autocomplete="off" { }
             }
             label {
                 span { "Content" }
