@@ -31,7 +31,7 @@ pub fn post(post: &Post) -> Markup {
             span.poster {
                 (post.poster.name)
                 @if let Some(hash) = post.poster.hash() {
-                    i { " #" (hash) }
+                    span.tripcode { " #" (hash) }
                 }
             }
             pre.post-content { (post.content) }

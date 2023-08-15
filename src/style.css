@@ -62,8 +62,7 @@ body {
     font-family: sans-serif;
 }
 
-/* tripcode */
-.poster i {
+.poster .tripcode {
     align-self: flex-end;
     display: inline-block;
     
@@ -77,6 +76,6 @@ body {
     color: rgb(3, 139, 37);
 }
 
-.poster:hover i {
+.poster:hover .tripcode {
     max-width: none;
 }
