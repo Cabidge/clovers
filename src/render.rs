@@ -26,11 +26,20 @@ pub fn post_button() -> Markup {
 }
 
 pub fn post(post: &Post) -> Markup {
+    let poster_hash = post.poster.hash();
+
+    let mut queries = vec![("name", post.poster.name.as_str())];
+    if let Some(hash) = &poster_hash {
+        queries.push(("hash", hash.as_str()));
+    }
+
+    let poster_query = querystring::stringify(queries);
+
     html! {
         article.post {
-            span.poster {
+            a.poster href={"/posts?" (poster_query)} {
                 (post.poster.name)
-                @if let Some(hash) = post.poster.hash() {
+                @if let Some(hash) = poster_hash {
                     span.tripcode { " #" (hash) }
                 }
             }

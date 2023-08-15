@@ -4,7 +4,10 @@ mod render;
 
 use std::sync::{Arc, Mutex};
 
-use axum::{extract::State, Form};
+use axum::{
+    extract::{Query, State},
+    Form,
+};
 use maud::{html, Markup};
 use serde::Deserialize;
 
@@ -21,9 +24,15 @@ struct MakePost {
     poster: String,
 }
 
+#[derive(Deserialize)]
+struct GetPosts {
+    name: Option<String>,
+    hash: Option<String>,
+}
+
 #[tokio::main]
 async fn main() {
-    use axum::routing::{get, post};
+    use axum::routing::get;
 
     let state = AppState {
         posts: Arc::new(Mutex::new(vec![
@@ -43,7 +52,7 @@ async fn main() {
     };
 
     let post_routes = axum::Router::new()
-        .route("/", post(make_post))
+        .route("/", get(get_posts).post(make_post))
         .route("/new", get(get_post_form))
         .route("/new/cancel", get(|| async { render::post_button() }));
 
@@ -111,4 +120,43 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
         li { (render::post_button()) }
         li.new-post { (rendered_post) }
     }
+}
+
+async fn get_posts(State(state): State<AppState>, Query(query): Query<GetPosts>) -> Markup {
+    let posts = state.posts.lock().unwrap();
+    let posts = posts.iter().rev().filter(|post| {
+        if let Some(name) = &query.name {
+            if post.poster.name != *name {
+                return false;
+            }
+        }
+
+        if let Some(hash) = &query.hash {
+            if post.poster.hash().as_ref() != Some(hash) {
+                return false;
+            }
+        }
+
+        true
+    });
+
+    render::layout(
+        "clover :: posts",
+        html! {
+            @if let Some(name) = &query.name {
+                "Searching for posts by "
+                span.poster {
+                    (name)
+                    @if let Some(hash) = &query.hash {
+                        span.tripcode { " #" (hash) }
+                    }
+                }
+            }
+            ul #posts {
+                @for post in posts {
+                    li { (render::post(post)) }
+                }
+            }
+        },
+    )
 }
