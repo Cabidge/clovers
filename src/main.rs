@@ -100,6 +100,45 @@ async fn get_post_form() -> Markup {
     }
 }
 
+async fn get_posts(State(state): State<AppState>, Query(query): Query<GetPosts>) -> Markup {
+    let posts = state.posts.lock().unwrap();
+    let posts = posts.iter().rev().filter(|post| {
+        if let Some(name) = &query.name {
+            if post.poster.name != *name {
+                return false;
+            }
+        }
+
+        if let Some(hash) = &query.hash {
+            if post.poster.hash().as_ref() != Some(hash) {
+                return false;
+            }
+        }
+
+        true
+    });
+
+    render::layout(
+        "clovers :: posts",
+        html! {
+            @if let Some(name) = &query.name {
+                "Searching for posts by "
+                span.poster {
+                    (name)
+                    @if let Some(hash) = &query.hash {
+                        span.tripcode { " #" (hash) }
+                    }
+                }
+            }
+            ul #posts {
+                @for post in posts {
+                    li { (render::post(post)) }
+                }
+            }
+        },
+    )
+}
+
 async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> Markup {
     if post.content.is_empty() {
         return html! {
@@ -120,43 +159,4 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
         li { (render::post_button()) }
         li.new-post { (rendered_post) }
     }
-}
-
-async fn get_posts(State(state): State<AppState>, Query(query): Query<GetPosts>) -> Markup {
-    let posts = state.posts.lock().unwrap();
-    let posts = posts.iter().rev().filter(|post| {
-        if let Some(name) = &query.name {
-            if post.poster.name != *name {
-                return false;
-            }
-        }
-
-        if let Some(hash) = &query.hash {
-            if post.poster.hash().as_ref() != Some(hash) {
-                return false;
-            }
-        }
-
-        true
-    });
-
-    render::layout(
-        "clover :: posts",
-        html! {
-            @if let Some(name) = &query.name {
-                "Searching for posts by "
-                span.poster {
-                    (name)
-                    @if let Some(hash) = &query.hash {
-                        span.tripcode { " #" (hash) }
-                    }
-                }
-            }
-            ul #posts {
-                @for post in posts {
-                    li { (render::post(post)) }
-                }
-            }
-        },
-    )
 }
