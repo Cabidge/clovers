@@ -109,6 +109,6 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
 
     html! {
         li { (render::post_button()) }
-        li { (rendered_post) }
+        li.new-post { (rendered_post) }
     }
 }
