@@ -44,7 +44,8 @@ async fn main() {
 
     let post_routes = axum::Router::new()
         .route("/", post(make_post))
-        .route("/new", get(get_post_form));
+        .route("/new", get(get_post_form))
+        .route("/new/cancel", get(|| async { render::post_button() }));
 
     let app = axum::Router::new()
         .route("/", get(root))
@@ -85,6 +86,7 @@ async fn get_post_form() -> Markup {
                 textarea rows="10" name="content" placeholder="What's on your mind?" { }
             }
             button { "Post" }
+            a href="#" hx-get="/posts/new/cancel" hx-target="closest li" hx-swap="innerHTML" { "Cancel" }
         }
     }
 }
