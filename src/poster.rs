@@ -1,11 +1,10 @@
 use std::{convert::Infallible, str::FromStr};
 
-use base64ct::Encoding;
 use blake2::{Blake2s256, Digest};
 
 pub struct Poster {
     pub name: String,
-    hash: Option<Box<[u8]>>,
+    pub hash: Option<Vec<u8>>,
 }
 
 impl Poster {
@@ -34,19 +33,12 @@ impl Poster {
             .chain_update("#clovers#")
             .chain_update(&name)
             .finalize()
-            .to_vec()
-            .into_boxed_slice();
+            .to_vec();
 
         Self {
             name,
             hash: Some(hash),
         }
-    }
-
-    pub fn hash(&self) -> Option<String> {
-        self.hash
-            .as_ref()
-            .map(|hash| base64ct::Base64UrlUnpadded::encode_string(hash))
     }
 }
 
