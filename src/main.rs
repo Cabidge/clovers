@@ -70,7 +70,12 @@ async fn root() -> Markup {
         "clovers",
         html! {
             #post-form { (render::post_button()) }
-            ul #posts hx-get="/posts" hx-select="#posts" hx-swap="outerHTML" hx-trigger="revealed" { }
+            ul #posts
+                hx-get="/posts"
+                hx-select="#posts"
+                hx-swap="outerHTML"
+                hx-trigger="revealed"
+            { }
         },
     )
 }
@@ -94,7 +99,14 @@ async fn get_post_form() -> Markup {
                 textarea rows="10" name="content" placeholder="What's on your mind?" { }
             }
             button { "Post" }
-            a href="#" hx-get="/" hx-target="#post-form" hx-select="#post-form" hx-swap="outerHTML" { "Cancel" }
+            a href="#"
+                hx-get="/"
+                hx-target="#post-form"
+                hx-select="#post-form"
+                hx-swap="outerHTML"
+            {
+                "Cancel"
+            }
         }
     }
 }
