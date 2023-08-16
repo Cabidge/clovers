@@ -38,18 +38,13 @@ struct GetPosts {
 const DATABASE_URL: &str = "sqlite:./database.db?mode=rwc";
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     use axum::routing::get;
     use migration::MigratorTrait;
 
     // == DATABASE ==
-    let db = sea_orm::Database::connect(DATABASE_URL)
-        .await
-        .expect("Failed to connect to database");
-
-    migration::Migrator::up(&db, None)
-        .await
-        .expect("Failed to run migrations");
+    let db = sea_orm::Database::connect(DATABASE_URL).await?;
+    migration::Migrator::up(&db, None).await?;
 
     let state = AppState { db };
 
@@ -67,8 +62,9 @@ async fn main() {
     // == RUN ==
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .await?;
+
+    Ok(())
 }
 
 async fn root(State(state): State<AppState>) -> Result<Markup, StatusCode> {
