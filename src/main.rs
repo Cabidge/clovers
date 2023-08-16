@@ -5,9 +5,8 @@ mod poster;
 mod render;
 
 use axum::{
-    extract::{Query, State},
+    extract::{Form, Query, State},
     http::StatusCode,
-    Form,
 };
 use entities::{post, prelude::*};
 use maud::{html, Markup};
