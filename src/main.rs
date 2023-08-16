@@ -145,11 +145,13 @@ async fn get_posts(
         "clovers :: posts",
         html! {
             @if let Some(name) = &query.name {
-                "Searching for posts by "
-                span.poster {
-                    (name)
-                    @if let Some(hash) = &query.hash {
-                        span.tripcode { " #" (hash) }
+                span {
+                    "Searching for posts by "
+                    span.poster {
+                        (name)
+                        @if let Some(hash) = &query.hash {
+                            span.tripcode { " #" (hash) }
+                        }
                     }
                 }
             }
