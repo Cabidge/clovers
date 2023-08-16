@@ -21,12 +21,14 @@ struct AppState {
     db: sea_orm::DatabaseConnection,
 }
 
+/// Request body for the `/posts` route.
 #[derive(Deserialize)]
 struct MakePost {
     content: String,
     poster: String,
 }
 
+/// Query parameters for the `/posts` route.
 #[derive(Deserialize)]
 struct GetPosts {
     name: Option<String>,
@@ -40,6 +42,7 @@ async fn main() {
     use axum::routing::get;
     use migration::MigratorTrait;
 
+    // == DATABASE ==
     let db = sea_orm::Database::connect(DATABASE_URL)
         .await
         .expect("Failed to connect to database");
@@ -50,6 +53,7 @@ async fn main() {
 
     let state = AppState { db };
 
+    // == ROUTES ==
     let post_routes = axum::Router::new()
         .route("/", get(get_posts).post(make_post))
         .route("/new", get(get_post_form))
@@ -60,6 +64,7 @@ async fn main() {
         .nest("/posts", post_routes)
         .with_state(state);
 
+    // == RUN ==
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
         .await
