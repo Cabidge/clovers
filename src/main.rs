@@ -11,7 +11,7 @@ use axum::{
 };
 use entities::{post, prelude::*};
 use maud::{html, Markup};
-use sea_orm::{ActiveValue, ColumnTrait, EntityTrait, QueryFilter, QueryOrder};
+use sea_orm::{ActiveValue, ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QueryTrait};
 use serde::Deserialize;
 
 use crate::poster::Poster;
@@ -112,21 +112,22 @@ async fn get_posts(
     State(state): State<AppState>,
     Query(query): Query<GetPosts>,
 ) -> Result<Markup, StatusCode> {
-    let mut select = Post::find();
+    use base64ct::Encoding;
 
-    if let Some(name) = &query.name {
-        select = select.filter(post::Column::Name.eq(name));
-    }
+    let bytes = query
+        .hash
+        .as_deref()
+        .map(base64ct::Base64UrlUnpadded::decode_vec)
+        .transpose()
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-    if let Some(hash) = &query.hash {
-        use base64ct::Encoding;
-
-        let bytes =
-            base64ct::Base64UrlUnpadded::decode_vec(hash).map_err(|_| StatusCode::BAD_REQUEST)?;
-        select = select.filter(post::Column::Hash.eq(bytes));
-    }
-
-    let posts = select
+    let posts = Post::find()
+        .apply_if(query.name.as_ref(), |query, name| {
+            query.filter(post::Column::Name.eq(name))
+        })
+        .apply_if(bytes, |query, bytes| {
+            query.filter(post::Column::Hash.eq(bytes))
+        })
         .order_by_desc(post::Column::Id)
         .all(&state.db)
         .await
