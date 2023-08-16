@@ -98,7 +98,7 @@ async fn get_post_form() -> Markup {
         {
             label {
                 span { "Name (optional)" }
-                input name="poster" placeholder="Anonymous" autocomplete="off" { }
+                input name="poster" placeholder="Anonymous" autocomplete="off";
             }
             label {
                 span { "Content" }

@@ -1,5 +1,29 @@
 body {
     padding: 5rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+#post-form {
+    padding: 1rem;
+    border: solid black 1px;
+}
+
+#post-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+#post-form form label {
+    display: flex;
+    flex-direction: column;
+}
+
+#post-form form textarea {
+    resize: none;
 }
 
 #posts {
@@ -16,21 +40,6 @@ body {
 #posts li {
     padding: 1rem;
     border: solid black 1px;
-}
-
-.post-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.post-form label {
-    display: flex;
-    flex-direction: column;
-}
-
-.post-form textarea {
-    resize: none;
 }
 
 .poster {
