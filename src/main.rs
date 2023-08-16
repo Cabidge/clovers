@@ -66,24 +66,14 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn root(State(state): State<AppState>) -> Result<Markup, StatusCode> {
-    let posts = Post::find()
-        .order_by_desc(entities::post::Column::Id)
-        .all(&state.db)
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-    Ok(render::layout(
+async fn root() -> Markup {
+    render::layout(
         "clovers",
         html! {
             #post-form { (render::post_button()) }
-            ul #posts {
-                @for post in &posts {
-                    li { (render::post(post)) }
-                }
-            }
+            ul #posts hx-get="/posts" hx-select="#posts" hx-swap="outerHTML" hx-trigger="revealed" { }
         },
-    ))
+    )
 }
 
 async fn get_post_form() -> Markup {
