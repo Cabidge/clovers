@@ -5,7 +5,7 @@ mod poster;
 mod render;
 
 use axum::{
-    extract::{Form, Query, State},
+    extract::{Form, Path, Query, State},
     http::StatusCode,
 };
 use entities::{post, prelude::*};
@@ -50,7 +50,8 @@ async fn main() -> anyhow::Result<()> {
     // == ROUTES ==
     let post_routes = axum::Router::new()
         .route("/", get(get_posts).post(make_post))
-        .route("/new", get(get_post_form));
+        .route("/new", get(get_post_form))
+        .route("/replies/:id", get(get_post_and_replies));
 
     let app = axum::Router::new()
         .route("/", get(root))
@@ -195,4 +196,24 @@ async fn make_post(
             li.new-post { (rendered_post) }
         }
     })
+}
+
+async fn get_post_and_replies(
+    State(state): State<AppState>,
+    Path(id): Path<i32>,
+) -> Result<Markup, StatusCode> {
+    let post = Post::find_by_id(id)
+        .one(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    // TODO: show replies
+
+    Ok(render::layout(
+        "clovers :: post",
+        html! {
+            (render::post(&post))
+        },
+    ))
 }
