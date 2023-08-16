@@ -10,7 +10,7 @@ use axum::{
 };
 use entities::{post, prelude::*};
 use maud::{html, Markup};
-use sea_orm::{ActiveValue, ColumnTrait, EntityTrait, QueryFilter, QueryOrder, QueryTrait};
+use sea_orm::{entity::*, query::*};
 use serde::Deserialize;
 
 use crate::poster::Poster;
