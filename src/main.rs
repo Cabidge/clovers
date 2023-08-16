@@ -76,8 +76,8 @@ async fn root(State(state): State<AppState>) -> Result<Markup, StatusCode> {
     Ok(render::layout(
         "clovers",
         html! {
+            #post-form { (render::post_button()) }
             ul #posts {
-                li { (render::post_button()) }
                 @for post in &posts {
                     li { (render::post(post)) }
                 }
@@ -88,7 +88,14 @@ async fn root(State(state): State<AppState>) -> Result<Markup, StatusCode> {
 
 async fn get_post_form() -> Markup {
     html! {
-        form.post-form hx-post="/posts" hx-target="closest li" hx-swap="outerHTML" {
+        form.post-form
+            hx-disinherit="*"
+            hx-post="/posts"
+            hx-target="#post-form"
+            hx-select="#post-form"
+            hx-swap="outerHTML"
+            hx-select-oob="#posts:afterbegin"
+        {
             label {
                 span { "Name (optional)" }
                 input name="poster" placeholder="Anonymous" autocomplete="off" { }
@@ -98,7 +105,7 @@ async fn get_post_form() -> Markup {
                 textarea rows="10" name="content" placeholder="What's on your mind?" { }
             }
             button { "Post" }
-            a href="#" hx-get="/posts/new/cancel" hx-target="closest li" hx-swap="innerHTML" { "Cancel" }
+            a href="#" hx-get="/posts/new/cancel" hx-target="#post-form" hx-swap="innerHTML" { "Cancel" }
         }
     }
 }
@@ -128,6 +135,12 @@ async fn get_posts(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+    let rendered_posts = html! {
+        @for post in &posts {
+            li { (render::post(post)) }
+        }
+    };
+
     Ok(render::layout(
         "clovers :: posts",
         html! {
@@ -141,9 +154,7 @@ async fn get_posts(
                 }
             }
             ul #posts {
-                @for post in &posts {
-                    li { (render::post(post)) }
-                }
+                (rendered_posts)
             }
         },
     ))
@@ -176,7 +187,9 @@ async fn make_post(
     let rendered_post = render::post(&post);
 
     Ok(html! {
-        li { (render::post_button()) }
-        li.new-post { (rendered_post) }
+        #post-form { (render::post_button()) }
+        ul #posts {
+            li.new-post { (rendered_post) }
+        }
     })
 }
