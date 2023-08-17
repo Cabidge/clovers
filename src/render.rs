@@ -48,6 +48,7 @@ pub fn post(post: &post::Model) -> Markup {
                 (poster(&post.name, serialized_hash.as_deref()))
             }
             pre.post-content { (post.content) }
+            a href={"/posts/replies/" (post.id)} { "View Replies" }
         }
     }
 }
