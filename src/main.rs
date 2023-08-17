@@ -27,10 +27,9 @@ struct MakePost {
     poster: String,
 }
 
-/// Query parameters for the `/posts` route.
+/// Query parameters for the `/user/:name` route.
 #[derive(Deserialize)]
-struct GetPosts {
-    name: Option<String>,
+struct GetUser {
     hash: Option<String>,
 }
 
@@ -55,6 +54,7 @@ async fn main() -> anyhow::Result<()> {
 
     let app = axum::Router::new()
         .route("/", get(root))
+        .route("/user/:name", get(get_user))
         .nest("/posts", post_routes)
         .with_state(state);
 
@@ -79,6 +79,50 @@ async fn root() -> Markup {
             { }
         },
     )
+}
+
+async fn get_user(
+    State(state): State<AppState>,
+    Path(name): Path<String>,
+    Query(query): Query<GetUser>,
+) -> Result<Markup, StatusCode> {
+    use base64ct::Encoding;
+
+    let bytes = query
+        .hash
+        .as_deref()
+        .map(base64ct::Base64UrlUnpadded::decode_vec)
+        .transpose()
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
+
+    let posts = Post::find()
+        .filter(post::Column::Name.eq(&name))
+        .apply_if(bytes, |query, bytes| {
+            query.filter(post::Column::Hash.eq(bytes))
+        })
+        .order_by_desc(post::Column::Id)
+        .all(&state.db)
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let rendered_posts = html! {
+        @for post in &posts {
+            li { (render::post(post)) }
+        }
+    };
+
+    Ok(render::layout(
+        "clovers :: posts",
+        html! {
+            span {
+                "Searching for posts by "
+                (render::poster(&name, query.hash.as_deref()))
+            }
+            ul #posts {
+                (rendered_posts)
+            }
+        },
+    ))
 }
 
 async fn get_post_form() -> Markup {
@@ -112,26 +156,8 @@ async fn get_post_form() -> Markup {
     }
 }
 
-async fn get_posts(
-    State(state): State<AppState>,
-    Query(query): Query<GetPosts>,
-) -> Result<Markup, StatusCode> {
-    use base64ct::Encoding;
-
-    let bytes = query
-        .hash
-        .as_deref()
-        .map(base64ct::Base64UrlUnpadded::decode_vec)
-        .transpose()
-        .map_err(|_| StatusCode::BAD_REQUEST)?;
-
+async fn get_posts(State(state): State<AppState>) -> Result<Markup, StatusCode> {
     let posts = Post::find()
-        .apply_if(query.name.as_ref(), |query, name| {
-            query.filter(post::Column::Name.eq(name))
-        })
-        .apply_if(bytes, |query, bytes| {
-            query.filter(post::Column::Hash.eq(bytes))
-        })
         .order_by_desc(post::Column::Id)
         .all(&state.db)
         .await
@@ -146,12 +172,6 @@ async fn get_posts(
     Ok(render::layout(
         "clovers :: posts",
         html! {
-            @if let Some(name) = &query.name {
-                span {
-                    "Searching for posts by "
-                    (render::poster(name, query.hash.as_deref()))
-                }
-            }
             ul #posts {
                 (rendered_posts)
             }

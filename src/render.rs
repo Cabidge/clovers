@@ -26,29 +26,28 @@ pub fn post_button() -> Markup {
 }
 
 pub fn post(post: &post::Model) -> Markup {
-    use base64ct::Encoding;
-
-    let serialized_hash = post
-        .hash
-        .as_deref()
-        .map(base64ct::Base64UrlUnpadded::encode_string);
-
-    let poster_query = {
-        let mut queries = vec![("name", post.name.as_str())];
-        if let Some(hash) = &serialized_hash {
-            queries.push(("hash", hash.as_str()));
-        }
-
-        querystring::stringify(queries)
-    };
-
     html! {
         article.post {
-            a.poster-link href={"/posts?" (poster_query)} {
-                (poster(&post.name, serialized_hash.as_deref()))
-            }
+            (poster_link(&post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
             a href={"/posts/replies/" (post.id)} { "View Replies" }
+        }
+    }
+}
+
+pub fn poster_link(name: &str, bytes: Option<&[u8]>) -> Markup {
+    use base64ct::Encoding;
+
+    let serialized_hash = bytes.map(base64ct::Base64UrlUnpadded::encode_string);
+
+    html! {
+        a.poster-link href={
+            "/user/" (name)
+            @if let Some(hash) = &serialized_hash {
+                "?hash=" (hash)
+            }
+        } {
+            (poster(name, serialized_hash.as_deref()))
         }
     }
 }
