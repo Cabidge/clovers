@@ -149,12 +149,7 @@ async fn get_posts(
             @if let Some(name) = &query.name {
                 span {
                     "Searching for posts by "
-                    span.poster {
-                        (name)
-                        @if let Some(hash) = &query.hash {
-                            span.tripcode { " #" (hash) }
-                        }
-                    }
+                    (render::poster(name, query.hash.as_deref()))
                 }
             }
             ul #posts {

@@ -42,12 +42,6 @@ body {
     border: solid black 1px;
 }
 
-.poster {
-    display: flex;
-    gap: 0.5rem;
-    font-weight: 600;
-}
-
 .post {
     display: flex;
     flex-direction: column;
@@ -71,13 +65,19 @@ body {
     font-family: sans-serif;
 }
 
-.poster {
+.poster-link {
+    color: black;
+    text-decoration: none;
     align-self: flex-start;
 }
 
-.poster .tripcode {
-    align-self: flex-end;
+.poster-name {
+    font-weight: bold;
+}
+
+.tripcode {
     display: inline-block;
+    vertical-align: bottom;
     
     max-width: 5rem;
     text-overflow: ellipsis;
@@ -85,10 +85,11 @@ body {
     white-space: nowrap;
 
     font-size: 0.9rem;
+    font-weight: bold;
     font-family: monospace;
     color: rgb(3, 139, 37);
 }
 
-.poster:hover .tripcode {
+:is(.poster:hover, .poster-link:focus) .tripcode {
     max-width: none;
 }

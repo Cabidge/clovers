@@ -28,27 +28,39 @@ pub fn post_button() -> Markup {
 pub fn post(post: &post::Model) -> Markup {
     use base64ct::Encoding;
 
-    let poster_hash = post
+    let serialized_hash = post
         .hash
-        .as_ref()
-        .map(|hash| base64ct::Base64UrlUnpadded::encode_string(hash));
+        .as_deref()
+        .map(base64ct::Base64UrlUnpadded::encode_string);
 
-    let mut queries = vec![("name", post.name.as_str())];
-    if let Some(hash) = &poster_hash {
-        queries.push(("hash", hash.as_str()));
-    }
+    let poster_query = {
+        let mut queries = vec![("name", post.name.as_str())];
+        if let Some(hash) = &serialized_hash {
+            queries.push(("hash", hash.as_str()));
+        }
 
-    let poster_query = querystring::stringify(queries);
+        querystring::stringify(queries)
+    };
 
     html! {
         article.post {
-            a.poster href={"/posts?" (poster_query)} {
-                (post.name)
-                @if let Some(hash) = poster_hash {
-                    span.tripcode { " #" (hash) }
-                }
+            a.poster-link href={"/posts?" (poster_query)} {
+                (poster(&post.name, serialized_hash.as_deref()))
             }
             pre.post-content { (post.content) }
+        }
+    }
+}
+
+pub fn poster(name: &str, hash: Option<&str>) -> Markup {
+    html! {
+        span.poster {
+            span.poster-name {
+                (name)
+            }
+            @if let Some(tripcode) = hash {
+                " (" span.tripcode { "#" (tripcode) } ")"
+            }
         }
     }
 }
