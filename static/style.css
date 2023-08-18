@@ -6,6 +6,8 @@
 
     --container-radius: 0.25rem;
     --container-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+
+    --link-color: rgb(3, 139, 37);
 }
 
 html {
@@ -19,6 +21,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover, a:focus {
+    text-decoration: underline;
 }
 
 #make-post-container {
