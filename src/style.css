@@ -1,3 +1,15 @@
+:root {
+    --background-color: rgb(200, 200, 200);
+    --foreground-color: white;
+    --text-color: black;
+    --trip-color: rgb(3, 139, 37);
+}
+
+html {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
 body {
     padding: 5rem;
 
@@ -8,7 +20,7 @@ body {
 
 #make-post-container {
     padding: 1rem;
-    border: solid black 1px;
+    background-color: var(--foreground-color);
 }
 
 form.post-form {
@@ -41,14 +53,14 @@ form.post-form textarea {
 
 #posts li {
     padding: 1rem;
-    border: solid black 1px;
+    background-color: var(--foreground-color);
 }
 
 .post {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    background-color: white;
+    background-color: var(--foreground-color);
 }
 
 .htmx-added.new-post {
@@ -68,7 +80,7 @@ form.post-form textarea {
 }
 
 .poster-link {
-    color: black;
+    color: var(--text-color);
     text-decoration: none;
     align-self: flex-start;
 }
@@ -80,7 +92,7 @@ form.post-form textarea {
 .tripcode {
     display: inline-block;
     vertical-align: bottom;
-    
+
     max-width: 5rem;
     text-overflow: ellipsis;
     overflow:hidden;
@@ -89,7 +101,7 @@ form.post-form textarea {
     font-size: 0.9rem;
     font-weight: bold;
     font-family: monospace;
-    color: rgb(3, 139, 37);
+    color: var(--trip-color);
 }
 
 :is(.poster:hover, .poster-link:focus) .tripcode {
