@@ -37,6 +37,12 @@ a:hover, a:focus {
     text-decoration: underline;
 }
 
+ul[role="list"] {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
 figure {
     margin: 0;
 
@@ -77,9 +83,6 @@ form.post-form textarea {
 }
 
 #posts {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
     width: 100%;
 
     display: flex;

@@ -88,7 +88,7 @@ async fn root(State(state): State<AppState>) -> AppResult<Markup> {
             }
             figure {
                 figcaption { "Recent Posts" }
-                ul #posts {
+                ul #posts role="list" {
                     @for post in &posts {
                         li { (render::post(post)) }
                     }
@@ -135,7 +135,7 @@ async fn get_user(
                 "Searching for posts by "
                 (render::poster(&name, query.hash.as_deref()))
             }
-            ul #posts {
+            ul #posts role="list" {
                 (rendered_posts)
             }
         },
@@ -187,7 +187,7 @@ async fn get_posts(State(state): State<AppState>) -> AppResult<Markup> {
     Ok(render::layout(
         "clovers :: posts",
         html! {
-            ul #posts {
+            ul #posts role="list" {
                 (rendered_posts)
             }
         },
@@ -213,7 +213,7 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
     let rendered_post = render::post(&post);
 
     Ok(html! {
-        ul #posts {
+        ul #posts role="list" {
             li.new-post { (rendered_post) }
         }
     })
@@ -243,7 +243,7 @@ async fn get_post_and_replies(
             }
             figure {
                 figcaption { "Replies" }
-                ul #{"replies-" (post.id)} .replies {
+                ul #{"replies-" (post.id)} .replies role="list" {
                     @for _reply in &replies {
                         li { /* TODO */ }
                     }
