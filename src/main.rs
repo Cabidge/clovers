@@ -59,6 +59,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/", get(root))
         .route("/user/:name", get(get_user))
         .nest("/posts", post_routes)
+        .route("/style.css", get(|| async { include_str!("style.css") }))
         .with_state(state);
 
     // == RUN ==
