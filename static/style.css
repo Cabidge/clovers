@@ -3,6 +3,9 @@
     --foreground-color: white;
     --text-color: black;
     --trip-color: rgb(3, 139, 37);
+
+    --container-radius: 0.25rem;
+    --container-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
 
 html {
@@ -21,6 +24,8 @@ body {
 #make-post-container {
     padding: 2rem;
     background-color: var(--foreground-color);
+    border-radius: var(--container-radius);
+    box-shadow: var(--container-shadow);
 }
 
 form.post-form {
@@ -55,6 +60,8 @@ form.post-form textarea {
     padding: 2rem;
 
     background-color: var(--foreground-color);
+    border-radius: var(--container-radius);
+    box-shadow: var(--container-shadow);
 
     display: flex;
     flex-direction: column;
