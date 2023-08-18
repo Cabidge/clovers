@@ -19,7 +19,7 @@ body {
 }
 
 #make-post-container {
-    padding: 1rem;
+    padding: 2rem;
     background-color: var(--foreground-color);
 }
 
@@ -52,7 +52,7 @@ form.post-form textarea {
 }
 
 .post {
-    padding: 1rem;
+    padding: 2rem;
 
     background-color: var(--foreground-color);
 
