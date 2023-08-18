@@ -1,1 +1,1 @@
-# clovers :: a (WIP) pseudo-anonymous message board
+# clovers :: an anonymous forum
