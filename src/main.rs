@@ -72,6 +72,7 @@ async fn main() -> anyhow::Result<()> {
 
 async fn root(State(state): State<AppState>) -> AppResult<Markup> {
     let posts = Post::find()
+        .filter(post::Column::ParentPostId.is_null())
         .order_by_desc(post::Column::Id)
         .limit(3)
         .all(&state.db)
@@ -173,6 +174,7 @@ async fn get_post_form() -> Markup {
 
 async fn get_posts(State(state): State<AppState>) -> AppResult<Markup> {
     let posts = Post::find()
+        .filter(post::Column::ParentPostId.is_null())
         .order_by_desc(post::Column::Id)
         .all(&state.db)
         .await
