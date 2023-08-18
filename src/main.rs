@@ -70,7 +70,10 @@ async fn root() -> Markup {
     render::layout(
         "clovers",
         html! {
-            #post-form { (render::post_button()) }
+            #make-post-container {
+                button hx-get="/posts/new" hx-target="#post-form" { "Make a Post" }
+                #post-form { }
+            }
             ul #posts
                 hx-get="/posts"
                 hx-select="#posts"
@@ -130,9 +133,7 @@ async fn get_post_form() -> Markup {
         form.post-form
             hx-disinherit="*"
             hx-post="/posts"
-            hx-target="#post-form"
-            hx-select="#post-form"
-            hx-swap="outerHTML"
+            hx-swap="delete"
             hx-select-oob="#posts:afterbegin"
         {
             label {
@@ -144,11 +145,11 @@ async fn get_post_form() -> Markup {
                 textarea rows="10" name="content" placeholder="What's on your mind?" { }
             }
             button { "Post" }
+            // TODO: use alpine or something to eliminate ajax request
             a href="#"
                 hx-get="/"
-                hx-target="#post-form"
-                hx-select="#post-form"
-                hx-swap="outerHTML"
+                hx-target="closest .post-form"
+                hx-swap="delete"
             {
                 "Cancel"
             }
@@ -184,9 +185,7 @@ async fn make_post(
     Form(post): Form<MakePost>,
 ) -> Result<Markup, StatusCode> {
     if post.content.is_empty() {
-        return Ok(html! {
-            li { (render::post_button()) }
-        });
+        return Ok(Markup::default());
     }
 
     let Poster { name, hash } = post.poster.parse().expect("Infallible");
@@ -206,7 +205,6 @@ async fn make_post(
     let rendered_post = render::post(&post);
 
     Ok(html! {
-        #post-form { (render::post_button()) }
         ul #posts {
             li.new-post { (rendered_post) }
         }

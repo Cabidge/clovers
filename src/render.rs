@@ -19,12 +19,6 @@ pub fn layout(title: &str, body: Markup) -> Markup {
     }
 }
 
-pub fn post_button() -> Markup {
-    html! {
-        button hx-get="/posts/new" hx-swap="outerHTML" { "Make a Post" }
-    }
-}
-
 pub fn post(post: &post::Model) -> Markup {
     html! {
         article.post {

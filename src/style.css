@@ -6,23 +6,25 @@ body {
     gap: 2rem;
 }
 
-#post-form {
+#make-post-container {
     padding: 1rem;
     border: solid black 1px;
 }
 
-#post-form form {
+form.post-form {
+    margin-top: 1rem;
+
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-#post-form form label {
+form.post-form label {
     display: flex;
     flex-direction: column;
 }
 
-#post-form form textarea {
+form.post-form textarea {
     resize: none;
 }
 
