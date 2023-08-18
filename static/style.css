@@ -143,3 +143,7 @@ form.post-form textarea {
 :is(.poster:hover, .poster-link:focus) .tripcode {
     max-width: none;
 }
+
+.replies:empty::after {
+    content: "No replies yet.";
+}

@@ -243,13 +243,9 @@ async fn get_post_and_replies(
             }
             figure {
                 figcaption { "Replies" }
-                @if replies.is_empty() {
-                    p { "No replies yet." }
-                } @else {
-                    ul #replies {
-                        @for _reply in &replies {
-                            li { /* TODO */ }
-                        }
+                ul #{"replies-" (post.id)} .replies {
+                    @for _reply in &replies {
+                        li { /* TODO */ }
                     }
                 }
             }
