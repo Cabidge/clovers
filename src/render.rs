@@ -10,7 +10,7 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 title { (title) }
                 script src="https://unpkg.com/htmx.org@1.9.4" { }
                 link rel="stylesheet" href="https://unpkg.com/modern-normalize";
-                link rel="stylesheet" href="/style.css";
+                link rel="stylesheet" href="/static/style.css";
             }
             body hx-boost="true" {
                 (body)

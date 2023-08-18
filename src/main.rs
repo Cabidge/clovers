@@ -50,6 +50,8 @@ async fn main() -> anyhow::Result<()> {
     let state = AppState { db };
 
     // == ROUTES ==
+    let serve_dir = tower_http::services::ServeDir::new("static");
+
     let post_routes = axum::Router::new()
         .route("/", get(get_posts).post(make_post))
         .route("/new", get(get_post_form))
@@ -59,7 +61,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/", get(root))
         .route("/user/:name", get(get_user))
         .nest("/posts", post_routes)
-        .route("/style.css", get(|| async { include_str!("style.css") }))
+        .nest_service("/static", serve_dir)
         .with_state(state);
 
     // == RUN ==
