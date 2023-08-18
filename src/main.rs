@@ -228,12 +228,31 @@ async fn get_post_and_replies(
         .await?
         .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Not Found: {id}")))?;
 
-    // TODO: show replies
+    let replies = Post::find()
+        .filter(post::Column::ParentPostId.eq(id))
+        .order_by_asc(post::Column::Id)
+        .all(&state.db)
+        .await?;
 
     Ok(render::layout(
-        "clovers :: post",
+        "clovers :: replies",
         html! {
             (render::post(&post))
+            #make-post-container {
+                button { "Reply" }
+            }
+            figure {
+                figcaption { "Replies" }
+                @if replies.is_empty() {
+                    p { "No replies yet." }
+                } @else {
+                    ul #replies {
+                        @for _reply in &replies {
+                            li { /* TODO */ }
+                        }
+                    }
+                }
+            }
         },
     ))
 }
