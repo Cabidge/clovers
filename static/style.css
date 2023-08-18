@@ -1,5 +1,5 @@
 :root {
-    --background-color: rgb(200, 200, 200);
+    --background-color: rgb(240, 240, 240);
     --foreground-color: white;
     --text-color: black;
     --trip-color: rgb(3, 139, 37);
@@ -51,16 +51,14 @@ form.post-form textarea {
     gap: 1rem;
 }
 
-#posts li {
-    padding: 1rem;
-    background-color: var(--foreground-color);
-}
-
 .post {
+    padding: 1rem;
+
+    background-color: var(--foreground-color);
+
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    background-color: var(--foreground-color);
 }
 
 .htmx-added.new-post {
