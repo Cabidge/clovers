@@ -33,6 +33,9 @@ struct GetUser {
     hash: Option<String>,
 }
 
+/// Return type for fallible routes.
+type AppResult<T> = Result<T, (StatusCode, String)>;
+
 const DATABASE_URL: &str = "sqlite:./database.db?mode=rwc";
 
 #[tokio::main]
@@ -88,7 +91,7 @@ async fn get_user(
     State(state): State<AppState>,
     Path(name): Path<String>,
     Query(query): Query<GetUser>,
-) -> Result<Markup, StatusCode> {
+) -> AppResult<Markup> {
     use base64ct::Encoding;
 
     let bytes = query
@@ -96,7 +99,7 @@ async fn get_user(
         .as_deref()
         .map(base64ct::Base64UrlUnpadded::decode_vec)
         .transpose()
-        .map_err(|_| StatusCode::BAD_REQUEST)?;
+        .map_err(|_| (StatusCode::BAD_REQUEST, String::from("Invalid Hash")))?;
 
     let posts = Post::find()
         .filter(post::Column::Name.eq(&name))
@@ -106,7 +109,7 @@ async fn get_user(
         .order_by_desc(post::Column::Id)
         .all(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(db_err_to_response)?;
 
     let rendered_posts = html! {
         @for post in &posts {
@@ -157,12 +160,12 @@ async fn get_post_form() -> Markup {
     }
 }
 
-async fn get_posts(State(state): State<AppState>) -> Result<Markup, StatusCode> {
+async fn get_posts(State(state): State<AppState>) -> AppResult<Markup> {
     let posts = Post::find()
         .order_by_desc(post::Column::Id)
         .all(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(db_err_to_response)?;
 
     let rendered_posts = html! {
         @for post in &posts {
@@ -180,10 +183,7 @@ async fn get_posts(State(state): State<AppState>) -> Result<Markup, StatusCode> 
     ))
 }
 
-async fn make_post(
-    State(state): State<AppState>,
-    Form(post): Form<MakePost>,
-) -> Result<Markup, StatusCode> {
+async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> AppResult<Markup> {
     if post.content.is_empty() {
         return Ok(Markup::default());
     }
@@ -200,7 +200,7 @@ async fn make_post(
     let post = Post::insert(post)
         .exec_with_returning(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(db_err_to_response)?;
 
     let rendered_post = render::post(&post);
 
@@ -214,12 +214,12 @@ async fn make_post(
 async fn get_post_and_replies(
     State(state): State<AppState>,
     Path(id): Path<i32>,
-) -> Result<Markup, StatusCode> {
+) -> AppResult<Markup> {
     let post = Post::find_by_id(id)
         .one(&state.db)
         .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-        .ok_or(StatusCode::NOT_FOUND)?;
+        .map_err(db_err_to_response)?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Not Found: {id}")))?;
 
     // TODO: show replies
 
@@ -229,4 +229,11 @@ async fn get_post_and_replies(
             (render::post(&post))
         },
     ))
+}
+
+fn db_err_to_response(_err: sea_orm::error::DbErr) -> (StatusCode, String) {
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        String::from("Database Error"),
+    )
 }
