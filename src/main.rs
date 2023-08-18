@@ -70,22 +70,32 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn root() -> Markup {
-    render::layout(
+async fn root(State(state): State<AppState>) -> AppResult<Markup> {
+    let posts = Post::find()
+        .order_by_desc(post::Column::Id)
+        .limit(3)
+        .all(&state.db)
+        .await
+        .map_err(db_err_to_response)?;
+
+    Ok(render::layout(
         "clovers",
         html! {
             #make-post-container {
                 button hx-get="/posts/new" hx-target="#post-form" { "Make a Post" }
                 #post-form { }
             }
-            ul #posts
-                hx-get="/posts"
-                hx-select="#posts"
-                hx-swap="outerHTML"
-                hx-trigger="revealed"
-            { }
+            figure {
+                figcaption { "Recent Posts" }
+                ul #posts {
+                    @for post in &posts {
+                        li { (render::post(post)) }
+                    }
+                }
+                a href="/posts" { "View More" }
+            }
         },
-    )
+    ))
 }
 
 async fn get_user(
