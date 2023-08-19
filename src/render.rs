@@ -9,6 +9,7 @@ pub fn layout(title: &str, body: Markup) -> Markup {
             head {
                 title { (title) }
                 script src="https://unpkg.com/htmx.org@1.9.4" { }
+                script src="https://unpkg.com/alpinejs" defer { }
                 link rel="stylesheet" href="https://unpkg.com/modern-normalize";
                 link rel="stylesheet" href="/static/style.css";
             }

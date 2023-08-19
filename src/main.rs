@@ -82,9 +82,36 @@ async fn root(State(state): State<AppState>) -> AppResult<Markup> {
     Ok(render::layout(
         "clovers",
         html! {
-            #make-post-container {
-                button hx-get="/posts/new" hx-target="#post-form" { "Make a Post" }
-                #post-form { }
+            #make-post-container x-data="{ open: false }" {
+                button x-on:click="open = true" { "Make a Post" }
+                template x-if="open" {
+                    // Until maud supports more flexible attributes, gotta resort to this.
+                    // Alternatively, I could create a custom struct that impl's the Render trait.
+                    // My specific problem is with trying to set the "x-on:htmx:after-request" attribute,
+                    // which contains two colons, which maud doesn't like for some reason.
+                    (maud::PreEscaped(
+                        r##"<form
+                            class="post-form"
+                            hx-post="/posts"
+                            hx-target="#posts"
+                            hx-select="#posts li"
+                            hx-swap="afterbegin"
+                            @htmx:after-request="open = false"
+                            x-init="$nextTick(() => htmx.process($el))"
+                        >"##
+                    ))
+                        label {
+                            span { "Name (optional)" }
+                            input name="poster" placeholder="Anonymous" autocomplete="off";
+                        }
+                        label {
+                            span { "Content" }
+                            textarea rows="10" name="content" placeholder="What's on your mind?" { }
+                        }
+                        button { "Post" }
+                        a href="#" x-on:click="open = false" { "Cancel" }
+                    (maud::PreEscaped("</form>"))
+                }
             }
             figure {
                 figcaption { "Recent Posts" }
@@ -143,32 +170,7 @@ async fn get_user(
 }
 
 async fn get_post_form() -> Markup {
-    html! {
-        form.post-form
-            hx-disinherit="*"
-            hx-post="/posts"
-            hx-swap="delete"
-            hx-select-oob="#posts:afterbegin"
-        {
-            label {
-                span { "Name (optional)" }
-                input name="poster" placeholder="Anonymous" autocomplete="off";
-            }
-            label {
-                span { "Content" }
-                textarea rows="10" name="content" placeholder="What's on your mind?" { }
-            }
-            button { "Post" }
-            // TODO: use alpine or something to eliminate ajax request
-            a href="#"
-                hx-get="/"
-                hx-target="closest .post-form"
-                hx-swap="delete"
-            {
-                "Cancel"
-            }
-        }
-    }
+    html! {}
 }
 
 async fn get_posts(State(state): State<AppState>) -> AppResult<Markup> {
