@@ -12,6 +12,8 @@ pub struct Model {
     pub hash: Option<Vec<u8>>,
     pub content: String,
     pub parent_post_id: Option<i32>,
+    // Need to manually specify the column type because sea-orm-codegen cannot infer the type of `created_at` column
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

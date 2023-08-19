@@ -23,6 +23,7 @@ pub fn layout(title: &str, body: Markup) -> Markup {
 pub fn post(post: &post::Model) -> Markup {
     html! {
         article.post {
+            span { "Posted " (post.created_at) }
             (poster_link(&post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
             a href={"/posts/replies/" (post.id)} { "View Replies" }

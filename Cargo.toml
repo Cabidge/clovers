@@ -10,6 +10,7 @@ anyhow = "1.0.72"
 axum = "0.6.20"
 base64ct = { version = "1.6.0", features = ["alloc"] }
 blake2 = "0.10.6"
+chrono = "0.4.26"
 html-escape = "0.2.13"
 maud = { version = "0.25.0", features = ["axum"] }
 migration = { path = "./migration" }

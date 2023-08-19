@@ -206,6 +206,7 @@ async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) ->
         content: ActiveValue::Set(post.content),
         name: ActiveValue::Set(name),
         hash: ActiveValue::Set(hash),
+        created_at: ActiveValue::Set(chrono::Utc::now()),
         ..Default::default()
     };
 
