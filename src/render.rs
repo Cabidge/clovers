@@ -14,7 +14,12 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 link rel="stylesheet" href="/static/style.css";
             }
             body hx-boost="true" {
-                (body)
+                header {
+                    h1 { a href="/" { "clovers" } }
+                }
+                main {
+                    (body)
+                }
             }
         }
     }

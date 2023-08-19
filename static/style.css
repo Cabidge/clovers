@@ -15,7 +15,20 @@ html {
     color: var(--text-color);
 }
 
-body {
+header {
+    position: sticky;
+    top: 0;
+
+    padding: 2rem 5rem;
+    background-color: var(--foreground-color);
+    box-shadow: var(--container-shadow);
+}
+
+header h1 {
+    font-size: 2rem;
+}
+
+main {
     padding: 5rem;
 
     display: flex;
