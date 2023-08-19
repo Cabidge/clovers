@@ -12,7 +12,6 @@ base64ct = { version = "1.6.0", features = ["alloc"] }
 blake2 = "0.10.6"
 maud = { version = "0.25.0", features = ["axum"] }
 migration = { path = "./migration" }
-querystring = "1.1.0"
 sea-orm = { version = "0.12.2", features = [
     "runtime-tokio-rustls",
     "macros",
