@@ -29,7 +29,7 @@ header h1 {
 }
 
 main {
-    padding: 5rem;
+    padding: 3rem 5rem;
 
     display: flex;
     flex-direction: column;
