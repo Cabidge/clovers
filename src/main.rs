@@ -2,6 +2,7 @@
 mod entities;
 
 mod error;
+mod markup_builder;
 mod poster;
 mod render;
 
@@ -86,31 +87,29 @@ async fn root(State(state): State<AppState>) -> AppResult<Markup> {
                 button x-on:click="open = true" { "Make a Post" }
                 template x-if="open" {
                     // Until maud supports more flexible attributes, gotta resort to this.
-                    // Alternatively, I could create a custom struct that impl's the Render trait.
                     // My specific problem is with trying to set the "x-on:htmx:after-request" attribute,
                     // which contains two colons, which maud doesn't like for some reason.
-                    (maud::PreEscaped(
-                        r##"<form
-                            class="post-form"
-                            hx-post="/posts"
-                            hx-target="#posts"
-                            hx-select="#posts li"
-                            hx-swap="afterbegin"
-                            @htmx:after-request="open = false"
-                            x-init="$nextTick(() => htmx.process($el))"
-                        >"##
-                    ))
-                        label {
-                            span { "Name (optional)" }
-                            input name="poster" placeholder="Anonymous" autocomplete="off";
-                        }
-                        label {
-                            span { "Content" }
-                            textarea rows="10" name="content" placeholder="What's on your mind?" { }
-                        }
-                        button { "Post" }
-                        a href="#" x-on:click="open = false" { "Cancel" }
-                    (maud::PreEscaped("</form>"))
+                    (markup_builder::MarkupBuilder::new("form")
+                        .class("post-form")
+                        .attribute("hx-post", "/posts")
+                        .attribute("hx-target", "#posts")
+                        .attribute("hx-select", "#posts li")
+                        .attribute("hx-swap", "afterbegin")
+                        .attribute("x-init", "$nextTick(() => htmx.process($el))")
+                        .attribute("@htmx:after-request", "open = false")
+                        .inner_html(html! {
+                            label {
+                                span { "Name (optional)" }
+                                input name="poster" placeholder="Anonymous" autocomplete="off";
+                            }
+                            label {
+                                span { "Content" }
+                                textarea rows="10" name="content" placeholder="What's on your mind?" { }
+                            }
+                            button { "Post" }
+                            a href="#" x-on:click="open = false" { "Cancel" }
+                        })
+                    )
                 }
             }
             figure {
