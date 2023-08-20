@@ -1,3 +1,5 @@
+/* === GLOBAL === */
+
 :root {
     --background-color: rgb(240, 240, 240);
     --foreground-color: white;
@@ -8,34 +10,6 @@
     --container-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 
     --link-color: rgb(3, 139, 37);
-}
-
-html {
-    background-color: var(--background-color);
-    color: var(--text-color);
-}
-
-header {
-    z-index: 10;
-
-    position: sticky;
-    top: 0;
-
-    padding: 2rem 5rem;
-    background-color: var(--foreground-color);
-    box-shadow: var(--container-shadow);
-}
-
-header h1 {
-    font-size: 2rem;
-}
-
-main {
-    padding: 3rem 5rem;
-
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
 }
 
 /* Remove default margins */
@@ -73,6 +47,38 @@ figcaption {
     font-weight: bold;
 }
 
+/* === MAIN CONTENT === */
+
+html {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+header {
+    z-index: 10;
+
+    position: sticky;
+    top: 0;
+
+    padding: 2rem 5rem;
+    background-color: var(--foreground-color);
+    box-shadow: var(--container-shadow);
+}
+
+header h1 {
+    font-size: 2rem;
+}
+
+main {
+    padding: 3rem 5rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* === POST FORM === */
+
 #make-post-container {
     padding: 2rem;
     background-color: var(--foreground-color);
@@ -96,6 +102,8 @@ form.post-form label {
 form.post-form textarea {
     resize: none;
 }
+
+/* === POSTS === */
 
 #posts {
     width: 100%;
@@ -161,6 +169,8 @@ form.post-form textarea {
 :is(.poster:hover, .poster-link:focus) .tripcode {
     max-width: none;
 }
+
+/* === REPLIES === */
 
 .replies:empty::after {
     content: "No replies yet.";
