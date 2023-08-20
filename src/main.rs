@@ -52,15 +52,11 @@ async fn main() -> anyhow::Result<()> {
     let state = AppState { db };
 
     // == ROUTES ==
-    let post_routes = axum::Router::new()
-        .route("/", get(get_posts).post(make_post))
-        .route("/new", get(get_post_form))
-        .route("/replies/:id", get(get_post_and_replies));
-
     let app = axum::Router::new()
         .route("/", get(root))
         .route("/user/:name", get(get_user))
-        .nest("/posts", post_routes)
+        .route("/posts", get(get_posts).post(make_post))
+        .route("/posts/replies/:id", get(get_post_and_replies))
         .nest_service("/static", tower_http::services::ServeDir::new("static"))
         .with_state(state);
 
@@ -166,10 +162,6 @@ async fn get_user(
             }
         },
     ))
-}
-
-async fn get_post_form() -> Markup {
-    html! {}
 }
 
 async fn get_posts(State(state): State<AppState>) -> AppResult<Markup> {
