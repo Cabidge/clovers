@@ -1,3 +1,4 @@
+use axum_extra::routing::TypedPath;
 use maud::{html, Markup};
 
 use crate::entities::post;
@@ -25,30 +26,36 @@ pub fn layout(title: &str, body: Markup) -> Markup {
     }
 }
 
-pub fn post(post: &post::Model) -> Markup {
+pub fn post(post: post::Model) -> Markup {
+    use crate::routes::replies::RepliesPath;
+
+    let replies_path = RepliesPath { id: post.id };
+
     html! {
         article.post {
             span { "Posted " (post.created_at) }
-            (poster_link(&post.name, post.hash.as_deref()))
+            (poster_link(post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
-            a href={"/posts/replies/" (post.id)} { "View Replies" }
+            a href=(replies_path) { "View Replies" }
         }
     }
 }
 
-pub fn poster_link(name: &str, bytes: Option<&[u8]>) -> Markup {
+pub fn poster_link(name: String, bytes: Option<&[u8]>) -> Markup {
+    use crate::routes::user::{UserPath, UserQuery};
     use base64ct::Encoding;
 
     let serialized_hash = bytes.map(base64ct::Base64UrlUnpadded::encode_string);
 
+    let rendered_poster = poster(&name, serialized_hash.as_deref());
+
+    let user_path = UserPath { name }.with_query_params(UserQuery {
+        hash: serialized_hash,
+    });
+
     html! {
-        a.poster-link href={
-            "/user/" (name)
-            @if let Some(hash) = &serialized_hash {
-                "?hash=" (hash)
-            }
-        } {
-            (poster(name, serialized_hash.as_deref()))
+        a.poster-link href=(user_path) {
+            (rendered_poster)
         }
     }
 }

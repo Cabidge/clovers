@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.72"
 axum = "0.6.20"
+axum-extra = { version = "0.7.7", features = ["typed-routing"] }
 base64ct = { version = "1.6.0", features = ["alloc"] }
 blake2 = "0.10.6"
 chrono = "0.4.26"

@@ -5,34 +5,13 @@ mod error;
 mod markup_builder;
 mod poster;
 mod render;
+mod routes;
 
-use axum::{
-    extract::{Form, Path, Query, State},
-    http::StatusCode,
-};
-use entities::{post, prelude::*};
-use maud::{html, Markup};
-use sea_orm::{entity::*, query::*};
-use serde::Deserialize;
-
-use crate::poster::Poster;
+use axum_extra::routing::RouterExt;
 
 #[derive(Clone)]
-struct AppState {
+pub struct AppState {
     db: sea_orm::DatabaseConnection,
-}
-
-/// Request body for the `/posts` route.
-#[derive(Deserialize)]
-struct MakePost {
-    content: String,
-    poster: String,
-}
-
-/// Query parameters for the `/user/:name` route.
-#[derive(Deserialize)]
-struct GetUser {
-    hash: Option<String>,
 }
 
 /// Return type for fallible routes.
@@ -42,7 +21,6 @@ const DATABASE_URL: &str = "sqlite:./database.db?mode=rwc";
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use axum::routing::get;
     use migration::MigratorTrait;
 
     // == DATABASE ==
@@ -53,10 +31,11 @@ async fn main() -> anyhow::Result<()> {
 
     // == ROUTES ==
     let app = axum::Router::new()
-        .route("/", get(root))
-        .route("/user/:name", get(get_user))
-        .route("/posts", get(get_posts).post(make_post))
-        .route("/posts/replies/:id", get(get_post_and_replies))
+        .typed_get(routes::root)
+        .typed_get(routes::posts::get_posts)
+        .typed_post(routes::posts::make_post)
+        .typed_get(routes::replies::get_replies)
+        .typed_get(routes::user::search_user)
         .nest_service("/static", tower_http::services::ServeDir::new("static"))
         .with_state(state);
 
@@ -66,183 +45,4 @@ async fn main() -> anyhow::Result<()> {
         .await?;
 
     Ok(())
-}
-
-async fn root(State(state): State<AppState>) -> AppResult<Markup> {
-    let posts = Post::find()
-        .filter(post::Column::ParentPostId.is_null())
-        .order_by_desc(post::Column::Id)
-        .limit(3)
-        .all(&state.db)
-        .await?;
-
-    Ok(render::layout(
-        "clovers",
-        html! {
-            #make-post-container x-data="{ open: false }" {
-                button x-on:click="open = true" { "Make a Post" }
-                template x-if="open" {
-                    // Until maud supports more flexible attributes, gotta resort to this.
-                    // My specific problem is with trying to set the "x-on:htmx:after-request" attribute,
-                    // which contains two colons, which maud doesn't like for some reason.
-                    (markup_builder::MarkupBuilder::new("form")
-                        .class("post-form")
-                        .attribute("hx-post", "/posts")
-                        .attribute("hx-target", "#posts")
-                        .attribute("hx-select", "#posts li")
-                        .attribute("hx-swap", "afterbegin")
-                        .attribute("x-init", "$nextTick(() => htmx.process($el))")
-                        .attribute("@htmx:after-request", "open = false")
-                        .inner_html(html! {
-                            label {
-                                span { "Name (optional)" }
-                                input name="poster" placeholder="Anonymous" autocomplete="off";
-                            }
-                            label {
-                                span { "Content" }
-                                textarea rows="10" name="content" placeholder="What's on your mind?" { }
-                            }
-                            button { "Post" }
-                            a href="#" x-on:click="open = false" { "Cancel" }
-                        })
-                    )
-                }
-            }
-            figure {
-                figcaption { "Recent Posts" }
-                ul #posts role="list" {
-                    @for post in &posts {
-                        li { (render::post(post)) }
-                    }
-                }
-                a href="/posts" { "View More" }
-            }
-        },
-    ))
-}
-
-async fn get_user(
-    State(state): State<AppState>,
-    Path(name): Path<String>,
-    Query(query): Query<GetUser>,
-) -> AppResult<Markup> {
-    use base64ct::Encoding;
-
-    let bytes = query
-        .hash
-        .as_deref()
-        .map(base64ct::Base64UrlUnpadded::decode_vec)
-        .transpose()
-        .map_err(|_| (StatusCode::BAD_REQUEST, String::from("Invalid Hash")))?;
-
-    let posts = Post::find()
-        .filter(post::Column::Name.eq(&name))
-        .apply_if(bytes, |query, bytes| {
-            query.filter(post::Column::Hash.eq(bytes))
-        })
-        .order_by_desc(post::Column::Id)
-        .all(&state.db)
-        .await?;
-
-    let rendered_posts = html! {
-        @for post in &posts {
-            li { (render::post(post)) }
-        }
-    };
-
-    Ok(render::layout(
-        "clovers :: posts",
-        html! {
-            span {
-                "Searching for posts by "
-                (render::poster(&name, query.hash.as_deref()))
-            }
-            ul #posts role="list" {
-                (rendered_posts)
-            }
-        },
-    ))
-}
-
-async fn get_posts(State(state): State<AppState>) -> AppResult<Markup> {
-    let posts = Post::find()
-        .filter(post::Column::ParentPostId.is_null())
-        .order_by_desc(post::Column::Id)
-        .all(&state.db)
-        .await?;
-
-    let rendered_posts = html! {
-        @for post in &posts {
-            li { (render::post(post)) }
-        }
-    };
-
-    Ok(render::layout(
-        "clovers :: posts",
-        html! {
-            ul #posts role="list" {
-                (rendered_posts)
-            }
-        },
-    ))
-}
-
-async fn make_post(State(state): State<AppState>, Form(post): Form<MakePost>) -> AppResult<Markup> {
-    if post.content.is_empty() {
-        return Ok(Markup::default());
-    }
-
-    let Poster { name, hash } = post.poster.parse().expect("Infallible");
-
-    let post = post::ActiveModel {
-        content: ActiveValue::Set(post.content),
-        name: ActiveValue::Set(name),
-        hash: ActiveValue::Set(hash),
-        created_at: ActiveValue::Set(chrono::Utc::now()),
-        ..Default::default()
-    };
-
-    let post = Post::insert(post).exec_with_returning(&state.db).await?;
-
-    let rendered_post = render::post(&post);
-
-    Ok(html! {
-        ul #posts role="list" {
-            li.new-post { (rendered_post) }
-        }
-    })
-}
-
-async fn get_post_and_replies(
-    State(state): State<AppState>,
-    Path(id): Path<i32>,
-) -> AppResult<Markup> {
-    let post = Post::find_by_id(id)
-        .one(&state.db)
-        .await?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Not Found: {id}")))?;
-
-    let replies = Post::find()
-        .filter(post::Column::ParentPostId.eq(id))
-        .order_by_asc(post::Column::Id)
-        .all(&state.db)
-        .await?;
-
-    Ok(render::layout(
-        "clovers :: replies",
-        html! {
-            (render::post(&post))
-            #make-post-container {
-                button { "Reply" }
-            }
-            figure {
-                figcaption { "Replies" }
-                ul #{"replies-" (post.id)} .replies role="list" {
-                    @for _reply in &replies {
-                        li { /* TODO */ }
-                    }
-                }
-            }
-        },
-    ))
 }
