@@ -2,7 +2,6 @@
 mod entities;
 
 mod error;
-mod markup_builder;
 mod poster;
 mod render;
 mod routes;

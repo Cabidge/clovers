@@ -10,7 +10,7 @@ use serde::Deserialize;
 
 use crate::{
     entities::{post, prelude::*},
-    markup_builder, render, AppResult, AppState,
+    render, AppResult, AppState,
 };
 
 #[derive(TypedPath, Deserialize)]
@@ -27,39 +27,34 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
 
     let posts_path = posts::PostsPath::PATH;
 
-    let form_body = html! {
-        label {
-            span { "Name (optional)" }
-            input name="poster" placeholder="Anonymous" autocomplete="off";
-        }
-        label {
-            span { "Content" }
-            textarea rows="10" name="content" placeholder="What's on your mind?" { }
-        }
-        button { "Post" }
-        a href="#" x-on:click="open = false" { "Cancel" }
-    };
-
-    // Until maud supports more flexible attributes, gotta resort to this.
-    // My specific problem is with trying to set the "x-on:htmx:after-request" attribute,
-    // which contains two colons, which maud doesn't like for some reason.
-    // An alternative is to add an event listener to the post button, like the cancel button, which I might try.
-    let form_template = markup_builder::MarkupBuilder::new("form")
-        .class("post-form")
-        .attribute("hx-post", posts_path)
-        .attribute("hx-target", "#posts")
-        .attribute("hx-select", "#posts li")
-        .attribute("hx-swap", "afterbegin")
-        .attribute("x-init", "$nextTick(() => htmx.process($el))")
-        .attribute("@htmx:after-request", "open = false")
-        .inner_html(form_body);
-
     Ok(render::layout(
         "clovers",
         html! {
             #make-post-container x-data="{ open: false }" {
                 button x-on:click="open = true" { "Make a Post" }
-                template x-if="open" { (form_template) }
+                template x-if="open" {
+                    form.post-form
+                        hx-post=(posts_path)
+                        hx-target="#posts"
+                        hx-select="#posts li"
+                        hx-swap="afterbegin"
+                        x-init="$nextTick(() => htmx.process($el))"
+                        // This has to be done next tick because otherwise htmx won't execute the post request.
+                        // An alternative could be to use x-show and clear the form, but that would be more complicated.
+                        x-on:submit="$nextTick(() => open = false)"
+                    {
+                        label {
+                            span { "Name (optional)" }
+                            input name="poster" placeholder="Anonymous" autocomplete="off";
+                        }
+                        label {
+                            span { "Content" }
+                            textarea rows="10" name="content" placeholder="What's on your mind?" { }
+                        }
+                        button { "Post" }
+                        a href="#" x-on:click="open = false" { "Cancel" }
+                    }
+                }
             }
             figure {
                 figcaption { "Recent Posts" }
