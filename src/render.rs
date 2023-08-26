@@ -41,6 +41,28 @@ pub fn post(post: post::Model) -> Markup {
     }
 }
 
+pub fn reply(post: post::Model) -> Markup {
+    use crate::routes::replies::RepliesPath;
+
+    let id = post.id;
+    let replies_path = RepliesPath { id };
+
+    html! {
+        article.reply {
+            span { "Posted " (post.created_at) }
+            (poster_link(post.name, post.hash.as_deref()))
+            pre.post-content { (post.content) }
+        }
+        ul #{"replies-" (id)} .replies role="list" {
+            a href="#"
+                hx-get=(replies_path)
+                hx-select={".replies li"}
+                hx-swap="outerHTML"
+            { "Load More" }
+        }
+    }
+}
+
 pub fn poster_link(name: String, bytes: Option<&[u8]>) -> Markup {
     use crate::routes::user::{UserPath, UserQuery};
     use base64ct::Encoding;

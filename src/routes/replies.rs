@@ -42,8 +42,10 @@ pub async fn get_replies(
             figure {
                 figcaption { "Replies" }
                 ul #{"replies-" (post_id)} .replies role="list" {
-                    @for _reply in &replies {
-                        li { /* TODO */ }
+                    @for reply in replies {
+                        li {
+                            (render::reply(reply))
+                        }
                     }
                 }
             }
