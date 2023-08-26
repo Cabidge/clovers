@@ -175,3 +175,7 @@ form.post-form textarea {
 .replies:empty::after {
     content: "No replies yet.";
 }
+
+.replies .replies:empty {
+    display: none;
+}
