@@ -48,12 +48,14 @@ pub fn reply(post: post::Model) -> Markup {
     let replies_lazy_path = RepliesLazyPath { id };
 
     html! {
-        article.reply x-data="{ open: false }" {
+        article.reply {
             span { "Posted " (post.created_at) }
             (poster_link(post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
-            button x-on:click="open = true" { "Reply" }
-            (reply_form_template(id))
+            div x-data="{ open: false }" {
+                button x-on:click="open = true" { "Reply" }
+                (reply_form_template(id))
+            }
         }
         div hx-trigger="revealed" hx-get=(replies_lazy_path) hx-swap="outerHTML" { }
     }
