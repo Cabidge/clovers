@@ -173,7 +173,7 @@ form.post-form textarea {
 /* === REPLIES === */
 
 .replies {
-    width: 100%;
+    align-self: stretch;
 
     display: flex;
     flex-direction: column;
