@@ -36,8 +36,9 @@ pub async fn get_replies(
         "clovers :: replies",
         html! {
             (render::post(post))
-            #make-post-container {
-                button { "Reply" }
+            #make-post-container x-data="{ open: false }" {
+                button x-on:click="open = true" { "Reply" }
+                (render::reply_form_template(post_id))
             }
             figure {
                 figcaption { "Replies" }

@@ -61,6 +61,36 @@ pub fn reply(post: post::Model) -> Markup {
     }
 }
 
+pub fn reply_form_template(post_id: i32) -> Markup {
+    use crate::routes::replies::RepliesPath;
+
+    let replies_path = RepliesPath { id: post_id };
+
+    html! {
+        template x-if="open" {
+            form.post-form
+                hx-post=(replies_path)
+                hx-target={"#replies-" (post_id)}
+                hx-swap="afterbegin"
+                x-init="$nextTick(() => htmx.process($el))"
+                x-on:submit="$nextTick(() => open = false)"
+            {
+                input type="hidden" name="post_id" value=(post_id);
+                label {
+                    span { "Name (optional)" }
+                    input name="poster" placeholder="Anonymous" autocomplete="off";
+                }
+                label {
+                    span { "Content" }
+                    textarea rows="10" name="content" placeholder="What's on your mind?" { }
+                }
+                button { "Post" }
+                a href="#" x-on:click="open = false" { "Cancel" }
+            }
+        }
+    }
+}
+
 pub fn poster_link(name: String, bytes: Option<&[u8]>) -> Markup {
     use crate::routes::user::{UserPath, UserQuery};
     use base64ct::Encoding;
