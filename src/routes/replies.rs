@@ -15,6 +15,12 @@ pub struct RepliesPath {
     pub id: i32,
 }
 
+#[derive(TypedPath, Deserialize)]
+#[typed_path("/replies/:id/lazy")]
+pub struct RepliesLazyPath {
+    pub id: i32,
+}
+
 /// Request body for the `/replies/:id` route.
 #[derive(Deserialize)]
 pub struct MakeReply {
@@ -85,4 +91,34 @@ pub async fn make_reply(
     let rendered_reply = render::reply(post);
 
     Ok(rendered_reply)
+}
+
+pub async fn get_replies_lazy(
+    RepliesLazyPath { id }: RepliesLazyPath,
+    State(state): State<AppState>,
+) -> AppResult<Markup> {
+    const LAZY_LIMIT: u64 = 4;
+
+    let replies_path = RepliesPath { id };
+
+    let reply_count = Post::find().filter(post::Column::ParentPostId.eq(id)).count(&state.db).await?;
+
+    // Don't load too many replies
+    if reply_count > LAZY_LIMIT {
+        return Ok(html! {
+            a href="#"
+                hx-get=(replies_path)
+                hx-select={".replies"}
+                hx-swap="outerHTML"
+            { "Load " (reply_count) " Replies" }
+        })
+    }
+
+    Ok(html! {
+        div hx-trigger="load"
+            hx-get=(replies_path)
+            hx-select={".replies"}
+            hx-swap="outerHTML"
+        { }
+    })
 }

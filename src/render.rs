@@ -42,10 +42,10 @@ pub fn post(post: post::Model) -> Markup {
 }
 
 pub fn reply(post: post::Model) -> Markup {
-    use crate::routes::replies::RepliesPath;
+    use crate::routes::replies::RepliesLazyPath;
 
     let id = post.id;
-    let replies_path = RepliesPath { id };
+    let replies_lazy_path = RepliesLazyPath { id };
 
     html! {
         article.reply {
@@ -53,11 +53,7 @@ pub fn reply(post: post::Model) -> Markup {
             (poster_link(post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
         }
-        a href="#"
-            hx-get=(replies_path)
-            hx-select={".replies"}
-            hx-swap="outerHTML"
-        { "Load Replies" }
+        div hx-trigger="revealed" hx-get=(replies_lazy_path) hx-swap="outerHTML" { }
     }
 }
 

@@ -35,6 +35,7 @@ async fn main() -> anyhow::Result<()> {
         .typed_post(routes::posts::make_post)
         .typed_get(routes::replies::get_replies)
         .typed_post(routes::replies::make_reply)
+        .typed_get(routes::replies::get_replies_lazy)
         .typed_get(routes::user::search_user)
         .nest_service("/static", tower_http::services::ServeDir::new("static"))
         .with_state(state);
