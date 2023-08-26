@@ -53,13 +53,11 @@ pub fn reply(post: post::Model) -> Markup {
             (poster_link(post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
         }
-        ul #{"replies-" (id)} .replies role="list" {
-            a href="#"
-                hx-get=(replies_path)
-                hx-select={".replies li"}
-                hx-swap="outerHTML"
-            { "Load More" }
-        }
+        a href="#"
+            hx-get=(replies_path)
+            hx-select={".replies"}
+            hx-swap="outerHTML"
+        { "Load Replies" }
     }
 }
 
