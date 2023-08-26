@@ -1,4 +1,4 @@
-use axum::{extract::State, http::StatusCode};
+use axum::{extract::State, http::StatusCode, Form};
 use axum_extra::routing::TypedPath;
 use maud::{html, Markup};
 use sea_orm::{entity::*, query::*};
@@ -6,13 +6,20 @@ use serde::Deserialize;
 
 use crate::{
     entities::{post, prelude::*},
-    render, AppResult, AppState,
+    render, AppResult, AppState, poster::Poster,
 };
 
 #[derive(TypedPath, Deserialize)]
 #[typed_path("/replies/:id")]
 pub struct RepliesPath {
     pub id: i32,
+}
+
+/// Request body for the `/replies/:id` route.
+#[derive(Deserialize)]
+pub struct MakeReply {
+    content: String,
+    poster: String,
 }
 
 pub async fn get_replies(
@@ -52,4 +59,30 @@ pub async fn get_replies(
             }
         },
     ))
+}
+
+pub async fn make_reply(
+    RepliesPath { id }: RepliesPath,
+    State(state): State<AppState>,
+    Form(post): Form<MakeReply>,
+) -> AppResult<Markup> {
+    if post.content.is_empty() {
+        return Ok(Markup::default());
+    }
+
+    let Poster { name, hash } = post.poster.parse().expect("Infallible");
+
+    let post = post::ActiveModel {
+        content: ActiveValue::Set(post.content),
+        name: ActiveValue::Set(name),
+        hash: ActiveValue::Set(hash),
+        parent_post_id: ActiveValue::Set(Some(id)),
+        ..Default::default()
+    };
+
+    let post = Post::insert(post).exec_with_returning(&state.db).await?;
+
+    let rendered_reply = render::reply(post);
+
+    Ok(rendered_reply)
 }

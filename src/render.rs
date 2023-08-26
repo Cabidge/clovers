@@ -75,7 +75,6 @@ pub fn reply_form_template(post_id: i32) -> Markup {
                 x-init="$nextTick(() => htmx.process($el))"
                 x-on:submit="$nextTick(() => open = false)"
             {
-                input type="hidden" name="post_id" value=(post_id);
                 label {
                     span { "Name (optional)" }
                     input name="poster" placeholder="Anonymous" autocomplete="off";
