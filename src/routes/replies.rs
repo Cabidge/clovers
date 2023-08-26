@@ -106,11 +106,14 @@ pub async fn get_replies_lazy(
     // Don't load too many replies
     if reply_count > LAZY_LIMIT {
         return Ok(html! {
-            a href="#"
-                hx-get=(replies_path)
-                hx-select={".replies"}
-                hx-swap="outerHTML"
-            { "Load " (reply_count) " Replies" }
+            ul.replies {
+                a href="#"
+                    hx-get=(replies_path)
+                    hx-target="closest ul"
+                    hx-select={".replies"}
+                    hx-swap="outerHTML"
+                { "Load " (reply_count) " Replies" }
+            }
         })
     }
 
