@@ -77,6 +77,10 @@ main {
     gap: 2rem;
 }
 
+.hidden {
+    display: none;
+}
+
 /* === POST FORM === */
 
 #make-post-container {

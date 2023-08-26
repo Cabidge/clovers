@@ -57,7 +57,7 @@ pub fn reply(post: post::Model) -> Markup {
                 (reply_form_template(id))
             }
         }
-        div hx-trigger="revealed" hx-get=(replies_lazy_path) hx-swap="outerHTML" { }
+        div.hidden hx-trigger="revealed" hx-get=(replies_lazy_path) hx-swap="outerHTML" { }
     }
 }
 

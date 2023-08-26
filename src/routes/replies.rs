@@ -118,7 +118,7 @@ pub async fn get_replies_lazy(
     }
 
     Ok(html! {
-        div hx-trigger="load"
+        div.hidden hx-trigger="load"
             hx-get=(replies_path)
             hx-select={".replies"}
             hx-swap="outerHTML"
