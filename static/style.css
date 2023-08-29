@@ -3,13 +3,21 @@
 :root {
     --neutral-color: rgb(240, 240, 240);
     --container-color: white;
+    --primary-color: rgb(3, 139, 37);
     --text-color: black;
-    --trip-color: rgb(3, 139, 37);
+    --trip-color: var(--primary-color);
 
     --container-radius: 0.25rem;
     --container-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 
-    --link-color: rgb(3, 139, 37);
+    --link-color: var(--primary-color);
+}
+
+html[data-theme="dark"] {
+    --neutral-color: rgb(10, 10, 10);
+    --container-color: rgb(21, 23, 26);
+    --primary-color: rgb(60, 196, 94);
+    --text-color: white;
 }
 
 /* Remove default margins */
