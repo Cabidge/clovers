@@ -88,9 +88,9 @@ pub async fn make_reply(
 
     let post = Post::insert(post).exec_with_returning(&state.db).await?;
 
-    let rendered_reply = render::reply(post);
-
-    Ok(rendered_reply)
+    Ok(html! {
+        li.new-post { (render::reply(post)) }
+    })
 }
 
 pub async fn get_replies_lazy(
