@@ -49,10 +49,12 @@ pub fn reply(post: post::Model) -> Markup {
 
     html! {
         article.reply {
-            span { "Posted " (post.created_at) }
-            (poster_link(post.name, post.hash.as_deref()))
+            header {
+                (poster_link(post.name, post.hash.as_deref()))
+                span { " Posted " (post.created_at) }
+            }
             pre.post-content { (post.content) }
-            div x-data="{ open: false }" {
+            footer x-data="{ open: false }" {
                 button x-on:click="open = true" { "Reply" }
                 (reply_form_template(id))
             }
