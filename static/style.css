@@ -1,8 +1,8 @@
 /* === GLOBAL === */
 
 :root {
-    --background-color: rgb(240, 240, 240);
-    --foreground-color: white;
+    --neutral-color: rgb(240, 240, 240);
+    --container-color: white;
     --text-color: black;
     --trip-color: rgb(3, 139, 37);
 
@@ -50,7 +50,7 @@ section h2 {
 /* === MAIN CONTENT === */
 
 html {
-    background-color: var(--background-color);
+    background-color: var(--neutral-color);
     color: var(--text-color);
 }
 
@@ -61,7 +61,7 @@ body > header {
     top: 0;
 
     padding: 2rem 5rem;
-    background-color: var(--foreground-color);
+    background-color: var(--container-color);
     box-shadow: var(--container-shadow);
 }
 
@@ -85,7 +85,7 @@ main {
 
 #make-post-container {
     padding: 2rem;
-    background-color: var(--foreground-color);
+    background-color: var(--container-color);
     border-radius: var(--container-radius);
     box-shadow: var(--container-shadow);
 }
@@ -120,7 +120,7 @@ form.post-form textarea {
 .post {
     padding: 2rem;
 
-    background-color: var(--foreground-color);
+    background-color: var(--container-color);
     border-radius: var(--container-radius);
     box-shadow: var(--container-shadow);
 
@@ -207,7 +207,7 @@ form.post-form textarea {
 .reply {
     padding: 1rem;
 
-    background-color: var(--foreground-color);
+    background-color: var(--container-color);
     border-radius: var(--container-radius);
     box-shadow: var(--container-shadow);
 
