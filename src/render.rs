@@ -42,16 +42,17 @@ pub fn post(post: post::Model) -> Markup {
 }
 
 pub fn reply(post: post::Model) -> Markup {
-    use crate::routes::replies::RepliesLazyPath;
+    use crate::routes::replies::{RepliesPath, RepliesLazyPath};
 
     let id = post.id;
+    let replies_path = RepliesPath { id };
     let replies_lazy_path = RepliesLazyPath { id };
 
     html! {
         article.reply {
             header {
                 (poster_link(post.name, post.hash.as_deref()))
-                span { " Posted " (post.created_at) }
+                span { " Posted " a href=(replies_path) { (post.created_at) } }
             }
             pre.post-content { (post.content) }
             footer x-data="{ open: false }" {
