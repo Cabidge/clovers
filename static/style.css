@@ -54,7 +54,7 @@ html {
     color: var(--text-color);
 }
 
-header {
+body > header {
     z-index: 10;
 
     position: sticky;
@@ -65,7 +65,7 @@ header {
     box-shadow: var(--container-shadow);
 }
 
-header h1 {
+body > header h1 {
     font-size: 2rem;
 }
 
