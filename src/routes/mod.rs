@@ -56,8 +56,8 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
                     }
                 }
             }
-            figure {
-                figcaption { "Recent Posts" }
+            section {
+                h2 { "Recent Posts" }
                 ul #posts role="list" {
                     @for post in posts {
                         li { (render::post(post)) }

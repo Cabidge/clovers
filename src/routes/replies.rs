@@ -53,8 +53,8 @@ pub async fn get_replies(
                 button x-on:click="open = true" { "Reply" }
                 (render::reply_form_template(post_id))
             }
-            figure {
-                figcaption { "Replies" }
+            section {
+                h2 { "Replies" }
                 ul #{"replies-" (post_id)} .replies role="list" {
                     @for reply in replies {
                         li {
