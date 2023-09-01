@@ -11,10 +11,13 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 title { (title) }
                 script src="https://unpkg.com/htmx.org@1.9.4" { }
                 script src="https://unpkg.com/alpinejs" defer { }
-                link rel="stylesheet" href="https://unpkg.com/modern-normalize";
-                link rel="stylesheet" href="/static/style.css";
+                script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/attributify.global.js" { }
+                style {" [un-cloak] { display: none; } "}
+                link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css";
+                //link rel="stylesheet" href="https://unpkg.com/modern-normalize";
+                //link rel="stylesheet" href="/static/style.css";
             }
-            body hx-boost="true" {
+            body hx-boost="true" un-cloak {
                 header {
                     h1 { a href="/" { "clovers" } }
                 }
