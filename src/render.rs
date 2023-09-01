@@ -21,7 +21,7 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 header class="bg-white z-10 sticky top-0 px-20 py-8 shadow" {
                     h1 font="size-8 bold" { a class="text-#038b25 hover:underline" href="/" { "clovers" } }
                 }
-                main {
+                main px="20" py="12" flex="~ col" gap="8" {
                     (body)
                 }
             }
