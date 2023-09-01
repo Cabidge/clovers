@@ -38,8 +38,8 @@ pub fn post(post: post::Model) -> Markup {
         article p="8" bg="white" shadow="md" flex="~ col" gap="4" {
             span { "Posted " (post.created_at) }
             (poster_link(post.name, post.hash.as_deref()))
-            pre.post-content { (post.content) }
-            a href=(replies_path) { "View Replies" }
+            pre font-sans { (post.content) }
+            a text="#038b25" hover:underline href=(replies_path) { "View Replies" }
         }
     }
 }
@@ -109,7 +109,7 @@ pub fn poster_link(name: String, bytes: Option<&[u8]>) -> Markup {
     });
 
     html! {
-        a.poster-link href=(user_path) {
+        a href=(user_path) {
             (rendered_poster)
         }
     }
@@ -117,12 +117,12 @@ pub fn poster_link(name: String, bytes: Option<&[u8]>) -> Markup {
 
 pub fn poster(name: &str, hash: Option<&str>) -> Markup {
     html! {
-        span.poster {
-            span.poster-name {
+        span.poster font-bold {
+            span {
                 (name)
             }
             @if let Some(tripcode) = hash {
-                " (" span.tripcode { "#" (tripcode) } ")"
+                " (" span inline-block align-btm max-w="20 hover:none" truncate text="0.9rem #038b25" font-mono { "#" (tripcode) } ")"
             }
         }
     }
