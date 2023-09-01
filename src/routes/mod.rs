@@ -30,10 +30,13 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
     Ok(render::layout(
         "clovers",
         html! {
-            #make-post-container x-data="{ open: false }" {
+            #make-post-container p="2" bg="white" rounded shadow="md" x-data="{ open: false }" {
                 button x-on:click="open = true" { "Make a Post" }
                 template x-if="open" {
-                    form.post-form
+                    form
+                        mt="4"
+                        flex="~ col"
+                        gap="4"
                         hx-post=(posts_path)
                         hx-target="#posts"
                         hx-select="#posts li"
@@ -43,27 +46,27 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
                         // An alternative could be to use x-show and clear the form, but that would be more complicated.
                         x-on:submit="$nextTick(() => open = false)"
                     {
-                        label {
+                        label flex="~ col" {
                             span { "Name (optional)" }
                             input name="poster" placeholder="Anonymous" autocomplete="off";
                         }
-                        label {
+                        label flex="~ col" {
                             span { "Content" }
-                            textarea rows="10" name="content" placeholder="What's on your mind?" { }
+                            textarea resize="none" rows="10" name="content" placeholder="What's on your mind?" { }
                         }
                         button { "Post" }
-                        a href="#" x-on:click="open = false" { "Cancel" }
+                        button type="button" x-on:click="open = false" { "Cancel" }
                     }
                 }
             }
-            section {
-                h2 { "Recent Posts" }
-                ul #posts role="list" {
+            section flex="~ col items-start" gap="4" {
+                h2 font="size-5 bold" { "Recent Posts" }
+                ul #posts w="full" flex="~ col" gap="4" role="list" {
                     @for post in posts {
                         li { (render::post(post)) }
                     }
                 }
-                a href=(posts_path) { "View More" }
+                a text="#038b25" hover:underline href=(posts_path) { "View More" }
             }
         },
     ))
