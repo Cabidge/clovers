@@ -35,7 +35,7 @@ pub fn post(post: post::Model) -> Markup {
     let replies_path = RepliesPath { id: post.id };
 
     html! {
-        article.post {
+        article p="8" bg="white" shadow="md" flex="~ col" gap="4" {
             span { "Posted " (post.created_at) }
             (poster_link(post.name, post.hash.as_deref()))
             pre.post-content { (post.content) }
