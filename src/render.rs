@@ -29,6 +29,16 @@ pub fn layout(title: &str, body: Markup) -> Markup {
     }
 }
 
+pub fn posts(posts: Vec<post::Model>) -> Markup {
+    html! {
+        ul #posts w="full" flex="~ col" gap="4" role="list" {
+            @for post in posts {
+                li { (self::post(post)) }
+            }
+        }
+    }
+}
+
 pub fn post(post: post::Model) -> Markup {
     use crate::routes::replies::RepliesPath;
 

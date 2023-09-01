@@ -28,19 +28,9 @@ pub async fn get_posts(_: PostsPath, State(state): State<AppState>) -> AppResult
         .all(&state.db)
         .await?;
 
-    let rendered_posts = html! {
-        @for post in posts {
-            li { (render::post(post)) }
-        }
-    };
-
     Ok(render::layout(
         "clovers :: posts",
-        html! {
-            ul #posts role="list" {
-                (rendered_posts)
-            }
-        },
+        render::posts(posts),
     ))
 }
 
