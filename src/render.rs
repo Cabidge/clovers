@@ -17,11 +17,11 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 //link rel="stylesheet" href="https://unpkg.com/modern-normalize";
                 //link rel="stylesheet" href="/static/style.css";
             }
-            body ."bg-#f0f0f0" hx-boost="true" un-cloak {
-                header class="bg-white z-10 sticky top-0 px-20 py-8 shadow" {
-                    h1 font="size-8 bold" { a class="text-#038b25 hover:underline" href="/" { "clovers" } }
+            body bg="#f0f0f0" hx-boost="true" un-cloak {
+                header bg="white" z="10" sticky top="0" p="x-20 y-8" shadow {
+                    h1 font="size-8 bold" { a text="#038b25" hover:underline href="/" { "clovers" } }
                 }
-                main px="20" py="12" flex="~ col" gap="8" {
+                main p="x-20 y-12" flex="~ col" gap="8" {
                     (body)
                 }
             }
