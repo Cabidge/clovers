@@ -57,9 +57,5 @@ pub async fn make_post(
 
     let rendered_post = render::post(post);
 
-    Ok(html! {
-        ul #posts role="list" {
-            li.new-post { (rendered_post) }
-        }
-    })
+    Ok(render::post_list(html! { li.new-post { (rendered_post) } }))
 }

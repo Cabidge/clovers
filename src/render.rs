@@ -29,14 +29,22 @@ pub fn layout(title: &str, body: Markup) -> Markup {
     }
 }
 
-pub fn posts(posts: Vec<post::Model>) -> Markup {
+pub fn post_list(children: Markup) -> Markup {
     html! {
         ul #posts w="full" flex="~ col" gap="4" role="list" {
+            (children)
+        }
+    }
+}
+
+pub fn posts(posts: Vec<post::Model>) -> Markup {
+    post_list(
+        html! {
             @for post in posts {
                 li { (self::post(post)) }
             }
         }
-    }
+    )
 }
 
 pub fn post(post: post::Model) -> Markup {
