@@ -46,12 +46,6 @@ pub async fn search_user(
         .all(&state.db)
         .await?;
 
-    let rendered_posts = html! {
-        @for post in posts {
-            li { (render::post(post)) }
-        }
-    };
-
     Ok(render::layout(
         "clovers :: posts",
         html! {
@@ -59,9 +53,7 @@ pub async fn search_user(
                 "Searching for posts by "
                 (render::poster(&name, query.hash.as_deref()))
             }
-            ul #posts role="list" {
-                (rendered_posts)
-            }
+            (render::posts(posts))
         },
     ))
 }
