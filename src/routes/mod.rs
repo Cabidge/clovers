@@ -31,10 +31,9 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
         "clovers",
         html! {
             section p="8" bg="white" rounded shadow="md" x-data="{ open: false }" {
-                button x-on:click="open = true" { "Make a Post" }
+                button x-on:click="open = true" x-show="!open" { "Make a Post" }
                 template x-if="open" {
                     form
-                        mt="4"
                         flex="~ col"
                         gap="4"
                         hx-post=(posts_path)
@@ -54,8 +53,10 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
                             span { "Content" }
                             textarea resize="none" rows="10" name="content" placeholder="What's on your mind?" { }
                         }
-                        button { "Post" }
-                        button type="button" x-on:click="open = false" { "Cancel" }
+                        div flex="~ row justify-end" gap="4" {
+                            button p="x-2 y-1" b="~ black" rounded { "Post" }
+                            button p="x-2 y-1" b="~ black" rounded type="button" x-on:click="open = false" { "Cancel" }
+                        }
                     }
                 }
             }
