@@ -62,7 +62,7 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
             section flex="~ col items-start" gap="4" {
                 h2 font="size-5 bold" { "Recent Posts" }
                 (render::posts(posts))
-                a text="#038b25" hover:underline href=(posts_path) { "View More" }
+                (render::link(posts_path, "View More"))
             }
         },
     ))

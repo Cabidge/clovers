@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use axum_extra::routing::TypedPath;
 use maud::{html, Markup};
 
@@ -32,13 +34,19 @@ pub fn layout(title: &str, body: Markup) -> Markup {
             }
             body bg="#f0f0f0" hx-boost="true" un-cloak {
                 header bg="white" z="10" sticky top="0" p="x-20 y-8" shadow="md" {
-                    h1 font="size-8 bold" { a text="#038b25" hover:underline href="/" { "clovers" } }
+                    h1 font="size-8 bold" { (link("/", "clovers")) }
                 }
                 main p="x-20 y-12" flex="~ col" gap="8" {
                     (body)
                 }
             }
         }
+    }
+}
+
+pub fn link(href: impl Display, text: impl Display) -> Markup {
+    html! {
+        a text="#038b25" hover:underline href=(href) { (text) }
     }
 }
 
@@ -70,7 +78,7 @@ pub fn post(post: post::Model) -> Markup {
             span { "Posted " (post.created_at) }
             (poster_link(post.name, post.hash.as_deref()))
             pre font-sans { (post.content) }
-            a text="#038b25" hover:underline href=(replies_path) { "View Replies" }
+            (link(replies_path, "View Replies"))
         }
     }
 }
@@ -86,7 +94,7 @@ pub fn reply(post: post::Model) -> Markup {
         article p="4" bg="white" rounded shadow="md" flex="~ col" gap="4" {
             header {
                 (poster_link(post.name, post.hash.as_deref()))
-                span { " Posted " a text="#038b25" hover:underline href=(replies_path) { (post.created_at) } }
+                span { " Posted " (link(replies_path, post.created_at)) }
             }
             pre font-sans { (post.content) }
             footer x-data="{ open: false }" {
