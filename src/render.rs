@@ -83,18 +83,18 @@ pub fn reply(post: post::Model) -> Markup {
     let replies_lazy_path = RepliesLazyPath { id };
 
     html! {
-        article.reply {
+        article p="4" bg="white" rounded shadow="md" flex="~ col" gap="4" {
             header {
                 (poster_link(post.name, post.hash.as_deref()))
-                span { " Posted " a href=(replies_path) { (post.created_at) } }
+                span { " Posted " a text="#038b25" hover:underline href=(replies_path) { (post.created_at) } }
             }
-            pre.post-content { (post.content) }
+            pre font-sans { (post.content) }
             footer x-data="{ open: false }" {
                 button x-on:click="open = true" { "Reply" }
                 (reply_form_template(id))
             }
         }
-        div.hidden hx-trigger="revealed" hx-get=(replies_lazy_path) hx-swap="outerHTML" { }
+        div hidden hx-trigger="revealed" hx-get=(replies_lazy_path) hx-swap="outerHTML" { }
     }
 }
 
@@ -105,23 +105,26 @@ pub fn reply_form_template(post_id: i32) -> Markup {
 
     html! {
         template x-if="open" {
-            form.post-form
+            form
+                mt="4"
+                flex="~ col"
+                gap="4"
                 hx-post=(replies_path)
                 hx-target={"#replies-" (post_id)}
                 hx-swap="afterbegin"
                 x-init="$nextTick(() => htmx.process($el))"
                 x-on:submit="$nextTick(() => open = false)"
             {
-                label {
+                label flex="~ col" {
                     span { "Name (optional)" }
                     input name="poster" placeholder="Anonymous" autocomplete="off";
                 }
-                label {
+                label flex="~ col" {
                     span { "Content" }
-                    textarea rows="10" name="content" placeholder="What's on your mind?" { }
+                    textarea resize="none" rows="10" name="content" placeholder="What's on your mind?" { }
                 }
                 button { "Post" }
-                a href="#" x-on:click="open = false" { "Cancel" }
+                button type="button" x-on:click="open = false" { "Cancel" }
             }
         }
     }
