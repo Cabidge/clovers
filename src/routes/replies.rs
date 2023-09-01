@@ -49,15 +49,15 @@ pub async fn get_replies(
         "clovers :: replies",
         html! {
             (render::post(post))
-            #make-post-container x-data="{ open: false }" {
+            #make-post-container p="2" bg="white" rounded shadow="md" x-data="{ open: false }" {
                 button x-on:click="open = true" { "Reply" }
                 (render::reply_form_template(post_id))
             }
-            section {
-                h2 { "Replies" }
-                ul #{"replies-" (post_id)} .replies role="list" {
+            section flex="~ col items-start" gap="4" {
+                h2 font="size-5 bold" { "Replies" }
+                ul #{"replies-" (post_id)} .replies."empty:after:content-['No_replies_yet.']" flex="~ col self-stretch" gap="4" role="list" {
                     @for reply in replies {
-                        li {
+                        li flex="~ col" gap="4" {
                             (render::reply(reply))
                         }
                     }
@@ -89,7 +89,7 @@ pub async fn make_reply(
     let post = Post::insert(post).exec_with_returning(&state.db).await?;
 
     Ok(html! {
-        li.fade-in { (render::reply(post)) }
+        li.fade-in flex="~ col" gap="4" { (render::reply(post)) }
     })
 }
 
@@ -107,7 +107,7 @@ pub async fn get_replies_lazy(
     if reply_count > LAZY_LIMIT {
         return Ok(html! {
             ul.replies {
-                a href="#"
+                button
                     hx-get=(replies_path)
                     hx-target="closest ul"
                     hx-select={".replies"}
@@ -118,7 +118,7 @@ pub async fn get_replies_lazy(
     }
 
     Ok(html! {
-        div.hidden hx-trigger="load"
+        div hidden hx-trigger="load"
             hx-get=(replies_path)
             hx-select={".replies"}
             hx-swap="outerHTML"
