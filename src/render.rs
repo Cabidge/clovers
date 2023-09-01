@@ -12,7 +12,20 @@ pub fn layout(title: &str, body: Markup) -> Markup {
                 script src="https://unpkg.com/htmx.org@1.9.4" { }
                 script src="https://unpkg.com/alpinejs" defer { }
                 script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/attributify.global.js" { }
-                style {" [un-cloak] { display: none; } "}
+                style {"
+                    [un-cloak] { display: none; }
+
+                    .fade-in {
+                        transform: translateY(0);
+                        opacity: 1;
+                        transition: all 0.3s ease-out;
+                    }
+
+                    .fade-in.htmx-added {
+                        transform: translateY(-2rem);
+                        opacity: 0;
+                    }
+                "}
                 link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css";
                 //link rel="stylesheet" href="https://unpkg.com/modern-normalize";
                 //link rel="stylesheet" href="/static/style.css";

@@ -57,5 +57,5 @@ pub async fn make_post(
 
     let rendered_post = render::post(post);
 
-    Ok(render::post_list(html! { li.new-post { (rendered_post) } }))
+    Ok(render::post_list(html! { li.fade-in { (rendered_post) } }))
 }

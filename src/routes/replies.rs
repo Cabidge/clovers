@@ -89,7 +89,7 @@ pub async fn make_reply(
     let post = Post::insert(post).exec_with_returning(&state.db).await?;
 
     Ok(html! {
-        li.new-post { (render::reply(post)) }
+        li.fade-in { (render::reply(post)) }
     })
 }
 
