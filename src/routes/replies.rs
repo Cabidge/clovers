@@ -55,7 +55,12 @@ pub async fn get_replies(
             }
             section flex="~ col items-start" gap="4" {
                 h2 font="size-5 bold" { "Replies" }
-                ul #{"replies-" (post_id)} .replies."empty:after:content-['No_replies_yet.']" flex="~ col self-stretch" gap="4" role="list" {
+                ul #{"replies-" (post_id)}
+                    .replies."empty-after-content-['No_replies_yet.']"
+                    flex="~ col self-stretch"
+                    gap="4"
+                    role="list"
+                {
                     @for reply in replies {
                         li flex="~ col" gap="4" {
                             (render::reply(reply))
