@@ -76,7 +76,7 @@ pub async fn get_replies(
         "clovers :: replies",
         html! {
             (render::post(post))
-            #make-post-container p="8" bg="white" rounded shadow="md" x-data="{ open: false }" {
+            section p="8" bg="white" rounded shadow="md" x-data="{ open: false }" {
                 button x-on:click="open = true" { "Reply" }
                 (render::reply_form_template(id))
             }

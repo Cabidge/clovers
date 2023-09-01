@@ -30,7 +30,7 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
     Ok(render::layout(
         "clovers",
         html! {
-            #make-post-container p="8" bg="white" rounded shadow="md" x-data="{ open: false }" {
+            section p="8" bg="white" rounded shadow="md" x-data="{ open: false }" {
                 button x-on:click="open = true" { "Make a Post" }
                 template x-if="open" {
                     form
