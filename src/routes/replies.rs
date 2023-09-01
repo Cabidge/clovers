@@ -1,8 +1,8 @@
-use axum::{extract::State, http::StatusCode, Form};
+use axum::{extract::{State, Query}, http::StatusCode, Form};
 use axum_extra::routing::TypedPath;
 use maud::{html, Markup};
 use sea_orm::{entity::*, query::*};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     entities::{post, prelude::*},
@@ -13,6 +13,12 @@ use crate::{
 #[typed_path("/replies/:id")]
 pub struct RepliesPath {
     pub id: i32,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RepliesQuery {
+    #[serde(default)]
+    pub nested: bool,
 }
 
 #[derive(TypedPath, Deserialize)]
@@ -31,19 +37,40 @@ pub struct MakeReply {
 pub async fn get_replies(
     RepliesPath { id }: RepliesPath,
     State(state): State<AppState>,
+    Query(query): Query<RepliesQuery>,
 ) -> AppResult<Markup> {
-    let post = Post::find_by_id(id)
-        .one(&state.db)
-        .await?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Not Found: {id}")))?;
-
     let replies = Post::find()
         .filter(post::Column::ParentPostId.eq(id))
         .order_by_asc(post::Column::Id)
         .all(&state.db)
         .await?;
 
-    let post_id = post.id;
+    // Nested replies are rendered differently
+    if query.nested {
+        return Ok(html! {
+            ul #{"replies-" (id)}
+                .replies
+                empty:hidden
+                ml="3"
+                pl="3"
+                b="l-2 #038b25"
+                flex="~ col self-stretch"
+                gap="4"
+                role="list"
+            {
+                @for reply in replies {
+                    li flex="~ col" gap="4" {
+                        (render::reply(reply))
+                    }
+                }
+            }
+        })
+    }
+
+    let post = Post::find_by_id(id)
+        .one(&state.db)
+        .await?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Not Found: {id}")))?;
 
     Ok(render::layout(
         "clovers :: replies",
@@ -51,12 +78,12 @@ pub async fn get_replies(
             (render::post(post))
             #make-post-container p="2" bg="white" rounded shadow="md" x-data="{ open: false }" {
                 button x-on:click="open = true" { "Reply" }
-                (render::reply_form_template(post_id))
+                (render::reply_form_template(id))
             }
             section flex="~ col items-start" gap="4" {
                 h2 font="size-5 bold" { "Replies" }
-                ul #{"replies-" (post_id)}
-                    .replies."empty-after-content-['No_replies_yet.']"
+                ul #{"replies-" (id)}
+                    ."empty-after-content-['No_replies_yet.']"
                     flex="~ col self-stretch"
                     gap="4"
                     role="list"
@@ -104,18 +131,17 @@ pub async fn get_replies_lazy(
 ) -> AppResult<Markup> {
     const LAZY_LIMIT: u64 = 4;
 
-    let replies_path = RepliesPath { id };
+    let replies_path = RepliesPath { id }.with_query_params(RepliesQuery { nested: true });
 
     let reply_count = Post::find().filter(post::Column::ParentPostId.eq(id)).count(&state.db).await?;
 
     // Don't load too many replies
     if reply_count > LAZY_LIMIT {
         return Ok(html! {
-            ul.replies {
+            ul {
                 button
                     hx-get=(replies_path)
                     hx-target="closest ul"
-                    hx-select={".replies"}
                     hx-swap="outerHTML"
                 { "Load " (reply_count) " Replies" }
             }
@@ -125,7 +151,6 @@ pub async fn get_replies_lazy(
     Ok(html! {
         div hidden hx-trigger="load"
             hx-get=(replies_path)
-            hx-select={".replies"}
             hx-swap="outerHTML"
         { }
     })
