@@ -98,7 +98,7 @@ pub fn reply(post: post::Model) -> Markup {
             }
             pre font-sans { (post.content) }
             footer x-data="{ open: false }" {
-                button x-on:click="open = true" { "Reply" }
+                button x-show="!open" x-on:click="open = true" { "Reply" }
                 (reply_form_template(id))
             }
         }
@@ -114,7 +114,6 @@ pub fn reply_form_template(post_id: i32) -> Markup {
     html! {
         template x-if="open" {
             form
-                mt="4"
                 flex="~ col"
                 gap="4"
                 hx-post=(replies_path)

@@ -77,7 +77,7 @@ pub async fn get_replies(
         html! {
             (render::post(post))
             section p="8" bg="white" rounded shadow="md" x-data="{ open: false }" {
-                button x-on:click="open = true" { "Reply" }
+                button x-show="!open" x-on:click="open = true" { "Reply" }
                 (render::reply_form_template(id))
             }
             section flex="~ col items-start" gap="4" {
