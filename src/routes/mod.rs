@@ -54,7 +54,14 @@ pub async fn root(_: RootPath, State(state): State<AppState>) -> AppResult<Marku
                             textarea resize="none" rows="10" name="content" placeholder="What's on your mind?" { }
                         }
                         div flex="~ row justify-end" gap="4" {
-                            button p="x-4 y-1" rounded bg="#038b25" text="white" scale="100 hover:110 active:90" transition="transform-100" ease-in { "Post" }
+                            button p="x-4 y-1"
+                                rounded
+                                bg="#038b25"
+                                text="white"
+                                scale="100 hover:110 active:90"
+                                transition="transform-100"
+                                ease-in
+                            { "Post" }
                             button hover:underline rounded type="button" x-on:click="open = false" { "Cancel" }
                         }
                     }
