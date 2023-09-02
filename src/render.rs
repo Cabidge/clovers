@@ -50,6 +50,34 @@ pub fn link(href: impl Display, text: impl Display) -> Markup {
     }
 }
 
+pub fn post_form_body() -> &'static Markup {
+    use std::sync::OnceLock;
+
+    static CELL: OnceLock<Markup> = OnceLock::new();
+
+    CELL.get_or_init(|| html! {
+        label flex="~ col" {
+            span { "Name (optional)" }
+            input name="poster" placeholder="Anonymous" autocomplete="off";
+        }
+        label flex="~ col" {
+            span { "Content" }
+            textarea resize="none" rows="10" name="content" placeholder="What's on your mind?" { }
+        }
+        div flex="~ row justify-end" gap="4" {
+            button hover:underline rounded type="button" x-on:click="open = false" { "Cancel" }
+            button p="x-4 y-1"
+                rounded
+                bg="#038b25"
+                text="white"
+                scale="100 hover:110 active:90"
+                transition="transform-100"
+                ease-in
+            { "Post" }
+        }
+    })
+}
+
 pub fn post_list(children: Markup) -> Markup {
     html! {
         ul #posts w="full" flex="~ col" gap="4" role="list" {
@@ -121,27 +149,7 @@ pub fn reply_form_template(post_id: i32) -> Markup {
                 hx-swap="afterbegin"
                 x-init="$nextTick(() => htmx.process($el))"
                 x-on:submit="$nextTick(() => open = false)"
-            {
-                label flex="~ col" {
-                    span { "Name (optional)" }
-                    input name="poster" placeholder="Anonymous" autocomplete="off";
-                }
-                label flex="~ col" {
-                    span { "Content" }
-                    textarea resize="none" rows="10" name="content" placeholder="What's on your mind?" { }
-                }
-                div flex="~ row justify-end" gap="4" {
-                    button p="x-4 y-1"
-                        rounded
-                        bg="#038b25"
-                        text="white"
-                        scale="100 hover:110 active:90"
-                        transition="transform-100"
-                        ease-in
-                    { "Post" }
-                    button hover:underline rounded type="button" x-on:click="open = false" { "Cancel" }
-                }
-            }
+            { (post_form_body()) }
         }
     }
 }
