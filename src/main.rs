@@ -3,6 +3,7 @@ mod entities;
 
 mod error;
 mod poster;
+mod relative_time;
 mod render;
 mod routes;
 

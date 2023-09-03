@@ -44,9 +44,17 @@ pub fn layout(title: &str, body: Markup) -> Markup {
     }
 }
 
-pub fn link(href: impl Display, text: impl Display) -> Markup {
+pub fn link(href: impl Display, text: impl maud::Render) -> Markup {
     html! {
         a text="#038b25" hover:underline href=(href) { (text) }
+    }
+}
+
+pub fn relative_time(time: chrono::DateTime<chrono::Utc>) -> Markup {
+    html! {
+        time datetime=(time) title=(time) {
+            (crate::relative_time::Relative(time))
+        }
     }
 }
 
@@ -103,7 +111,7 @@ pub fn post(post: post::Model) -> Markup {
 
     html! {
         article p="8" bg="white" shadow="md" flex="~ col" gap="4" {
-            span { "Posted " (post.created_at) }
+            span { "Posted " (relative_time(post.created_at)) }
             (poster_link(post.name, post.hash.as_deref()))
             pre font-sans { (post.content) }
             (link(replies_path, "View Replies"))
@@ -122,7 +130,7 @@ pub fn reply(post: post::Model) -> Markup {
         article p="4" bg="white" rounded shadow="md" flex="~ col" gap="4" {
             header {
                 (poster_link(post.name, post.hash.as_deref()))
-                span { " Posted " (link(replies_path, post.created_at)) }
+                span { " Posted " (link(replies_path, relative_time(post.created_at))) }
             }
             pre font-sans { (post.content) }
             footer x-data="{ open: false }" {
